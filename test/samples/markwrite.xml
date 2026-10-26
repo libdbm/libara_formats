@@ -1,0 +1,78 @@
+<head name="MARKWRITE" section="1" date="2026-09-08" source="markwrite 0.9" manual="User Commands"/>
+<h1>NAME</h1>
+<p implied="">markwrite - edit a document in the notation it was written in</p>
+<h1>SYNOPSIS</h1>
+<p implied=""><strong>markwrite</strong>
+<span>[</span><em>options</em><span>]</span>
+<span>[</span><em>file</em><span>]</span></p>
+<h1>DESCRIPTION</h1>
+<p implied=""><strong>markwrite</strong>
+opens a document and shows it two ways at once: as the page it will print
+and as the text it is written in. The markup stays in the stream. A tag in
+XML, a hash in Markdown, a request line in roff and a sawtooth bracket in
+LMNL are each a token over the characters that represent them, and what the
+document means is derived from the tokens rather than kept beside them.</p>
+<p>An edit is made to the stream and nothing else. The tokens after it move
+with the text, the tokens inside it are read again, and everything the
+page was made of that the edit did not touch is kept. That is what lets
+a keystroke in a long book cost what the paragraph it falls in costs.</p>
+<p>Seven notations are read and written:
+<strong>XML</strong><span>,</span>
+<strong>HTML</strong><span>,</span>
+<strong>Markdown</strong><span>,</span>
+<strong>LMNL</strong><span>,</span>
+and the
+<strong>man</strong><span>,</span>
+<strong>ms</strong>
+and
+<strong>me</strong>
+macro packages of roff, with
+<strong>eqn</strong>
+for the mathematics in the last three.
+Word and OpenDocument files are imported and exported through their
+own readers and writers rather than as notations.</p>
+<h1>OPTIONS</h1>
+<dt><strong>--look</strong><em> name</em></dt>
+<dd>Open the document under the named stylesheet rather than the one it
+carries. A look is a stylesheet that ships with the application; the
+names are those the View menu lists.</dd>
+<dt><strong>--source</strong></dt>
+<dd>Open with the source pane showing and the printed pane hidden, which is
+how a document is opened for proofreading its markup.</dd>
+<dt><strong>--export</strong><em> kind</em></dt>
+<dd>Write the document out as
+<em>pdf</em><span>,</span>
+<em>docx</em>
+or
+<em>odt</em>
+and exit without opening a window.</dd>
+<dt><strong>--version</strong></dt>
+<dd>Print the version and exit.</dd>
+<h1>FILES</h1>
+<dt><em>~/Library/Application Support/Markwrite/settings</em></dt>
+<dd>Where the menus stand and whether documents save themselves, one setting
+to a line, readable and mendable by hand.</dd>
+<h1>NOTES</h1>
+<p implied="">A request this page's reader does not know shows nothing and is kept as
+it was written, so a page from the shelf opens, prints and saves back
+byte for byte. Registers, strings, conditionals and macros of a page's
+own are among what is kept and not read: a page that represents its words
+through them shows less than
+<strong>man</strong><span>(1)</span>
+would.</p>
+<p>The escapes for glyphs are read by name, so “the em dash — and the
+bullet •” show as the characters they name, and \&amp; stands for the
+zero-width space it always has.</p>
+<h1>EXAMPLES</h1>
+<p implied="">Open a Markdown chapter under the Book look:</p>
+<p/><pre>$ markwrite --look Book chapter.md
+</pre><p>Write a manual page out as a Word document without opening it:</p>
+<p/><pre>$ markwrite --export docx markwrite.1
+</pre><h1>SEE ALSO</h1>
+<p implied=""><strong>man</strong><span>(7),</span>
+<strong>groff_ms</strong><span>(7),</span>
+<strong>groff_me</strong><span>(7),</span>
+<strong>eqn</strong><span>(1)</span></p>
+<p>The documentation under</p>
+<a href="https://github.com/gtnicol/markwrite"><p implied="">the repository</p>
+</a><p implied="">describes the range algebra the editor rests on.</p>

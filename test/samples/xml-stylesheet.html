@@ -1,0 +1,206 @@
+<article>
+<h1 id="title">Associating Style Sheets with XML documents 1.0 (Second Edition)</h1>
+<h2 id="w3c-doctype">W3C Recommendation 28 October 2010</h2>
+<ul>
+<li>This version:</li>
+<li><a href="https://www.w3.org/TR/2010/REC-xml-stylesheet-20101028">http://www.w3.org/TR/2010/REC-xml-stylesheet-20101028</a></li>
+<li>Latest version:</li>
+<li><a href="https://www.w3.org/TR/xml-stylesheet/">http://www.w3.org/TR/xml-stylesheet</a></li>
+<li>Previous versions:</li>
+<li><a href="https://www.w3.org/TR/2010/PER-xml-stylesheet-20100909">http://www.w3.org/TR/2010/PER-xml-stylesheet-20100909</a></li>
+<li>Editors:</li>
+<li>James Clark (First Edition) <a href="mailto:jjc@jclark.com">&lt;jjc@jclark.com&gt;</a></li>
+<li>Simon Pieters (Second Edition), Opera Software <a href="mailto:simonp@opera.com">&lt;simonp@opera.com&gt;</a></li>
+<li>Henry S. Thompson (Second Edition), University of Edinburgh <a href="mailto:ht@inf.ed.ac.uk">&lt;ht@inf.ed.ac.uk&gt;</a></li></ul>
+<p>Please refer to the <a href="https://www.w3.org/1999/06/REC-xml-stylesheet-19990629/errata"><strong>errata</strong></a> for this document, which may include normative corrections.</p>
+<p>See also <a href=" http://www.w3.org/2003/03/Translations/byTechnology?technology=xml-stylesheet"><strong>translations</strong></a>.</p>
+<p>This document is also available in these non-normative formats: <a href="xml-stylesheet.xml">XML</a>.</p>
+<p><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2010 <a href="https://www.w3.org/">W3C</a>® (<a href="http://www.csail.mit.edu/">MIT</a>, <a href="http://www.ercim.eu/">ERCIM</a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<h2 id="abstract">Abstract</h2>
+<p>This document allows style sheets to be associated with an XML document by including one or more processing instructions with a target of <code>xml-stylesheet</code> in the document's prolog.</p>
+<h2 id="status">Status of This Document</h2>
+<p><em> This section describes the status of this document at the time of its publication. Other documents may supersede this document. A list of current W3C publications and the latest revision of this technical report can be found in the <a href="https://www.w3.org/TR/">W3C technical reports index</a> at http://www.w3.org/TR/. </em></p>
+<p> This document is a product of the <a href="https://www.w3.org/XML/Core/">XML Core Working Group</a> as part of the <a href="https://www.w3.org/XML/Activity.html">W3C XML Activity</a>. The English version of this specification is the only normative version. However, for translations of this document, see <a href="https://www.w3.org/2003/03/Translations/byTechnology?technology=xml-stylesheet"> http://www.w3.org/2003/03/Translations/byTechnology?technology=xml-stylesheet</a>. </p>
+<p> This second edition incorporates all known errata as of the publication date, clarifies several areas left unspecified in the earlier edition, and has been restructured to allow other specifications to reuse the rules for parsing pseudo-attributes from a string. A more detailed description of the changes from the first edition is in <a href="#changes"><strong>B Changes since the first edition</strong></a>. This edition supersedes the previous <a href="https://www.w3.org/1999/06/REC-xml-stylesheet-19990629/">edition of 29 June 1999</a>. </p>
+<p>Comments on this document may be sent to <a href="mailto:www-xml-stylesheet-comments@w3.org">www-xml-stylesheet-comments@w3.org</a>; public <a href="http://lists.w3.org/Archives/Public/www-xml-stylesheet-comments/">archives</a> are available. The errata list for this document is available at <a href="https://www.w3.org/1999/06/REC-xml-stylesheet-19990629/errata">http://www.w3.org/1999/06/REC-xml-stylesheet-19990629/errata</a></p>
+<p> This document has been reviewed by W3C Members, by software developers, and by other W3C groups and interested parties, and is endorsed by the Director as a W3C Recommendation. It is a stable document and may be used as reference material or cited from another document. W3C's role in making the Recommendation is to draw attention to the specification and to promote its widespread deployment. This enhances the functionality and interoperability of the Web.</p>
+<p> W3C maintains a <a href="https://www.w3.org/2002/08/xmlcore-IPR-statements">public list of any patent disclosures</a> made in connection with the deliverables of the group; that page also includes instructions for disclosing a patent. An individual who has actual knowledge of a patent which the individual believes contains <a href="https://www.w3.org/Consortium/Patent-Policy-20040205/#def-essential">Essential Claim(s)</a> must disclose the information in accordance with <a href="https://www.w3.org/Consortium/Patent-Policy-20040205/#sec-Disclosure">section 6 of the W3C Patent Policy</a>. </p>
+<h2 id="contents">Table of Contents</h2>
+<p>1 <a href="#introduction"> Introduction</a> 2 <a href="#conformance-requirements"> Conformance requirements</a> 3 <a href="#pseudo-attributes">Pseudo-attributes</a> 4 <a href="#the-xml-stylesheet-processing-instruction">The xml-stylesheet processing instruction</a></p>
+<h3 id="appendices">Appendices</h3>
+<p>A <a href="#references">References</a> B <a href="#changes">Changes since the first edition</a></p>
+<h2 id="introduction">1 Introduction</h2>
+<p><em>(This section is non-normative.)</em></p>
+<p>Authors might have particular intentions as to how user agents are to present the information contained in their XML documents. This specification provides a non-intrusive mechanism, using a processing instruction, to provide links to one or more style sheets, i.e. resources specifying the desired rendering in a designated language. User agents will use these resources to control presentation of XML.</p>
+<p>Consider an XHTML document with style sheet associations using the <code>link</code> element:</p>
+<pre>&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+ &lt;head&gt;
+  &lt;title&gt;Example with link elements&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;common.css&quot;/&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;default.css&quot; title=&quot;Default style&quot;/&gt;
+  &lt;link rel=&quot;alternate stylesheet&quot; href=&quot;alt.css&quot; title=&quot;Alternative style&quot;/&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;single-col.css&quot; media=&quot;all and (max-width: 30em)&quot;/&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+  ...
+ &lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>This document could be written as follows, using <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a>:</p>
+<pre>&lt;?xml-stylesheet href=&quot;common.css&quot;?&gt;
+&lt;?xml-stylesheet href=&quot;default.css&quot; title=&quot;Default style&quot;?&gt;
+&lt;?xml-stylesheet alternate=&quot;yes&quot; href=&quot;alt.css&quot; title=&quot;Alternative style&quot;?&gt;
+&lt;?xml-stylesheet href=&quot;single-col.css&quot; media=&quot;all and (max-width: 30em)&quot;?&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+ &lt;head&gt;
+  &lt;title&gt;Example with xml-stylesheet processing instructions&lt;/title&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+  ...
+ &lt;/body&gt;
+&lt;/html&gt;</pre>
+<h2 id="conformance-requirements">2 Conformance requirements</h2>
+<p>All diagrams, examples, and notes in this specification are non-normative, as are all sections explicitly marked non-normative. Everything else in this specification is normative.</p>
+<p>The key words <strong>must</strong>, <strong>must not</strong>, <strong>should</strong>, <strong>should not</strong> and <strong>may</strong> in the normative parts of this document are to be interpreted as described in RFC 2119. These words do not appear in all uppercase letters in this specification. <a href="#rfc2119">[RFC2119]</a></p>
+<p>The following conformance classes are defined by this specification:</p>
+<ul>
+<li>Documents</li>
+<li>
+<p>A document is considered to be a conforming document if it satisfies all <strong>must</strong>-level criteria in this specification that apply to documents.</p>
+<p><a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a> and their pseudo-attributes are intended for use by document authors to provide links to and information about one or more stylesheets, as described in <a href="#the-xml-stylesheet-processing-instruction"><strong>4 The xml-stylesheet processing instruction</strong></a>, which are available to be applied to the containing document.</p></li>
+<li>xml-stylesheet processors</li>
+<li>
+<p>XML defines an <a href="https://www.w3.org/TR/xml/#dt-app">application</a> as a software module which receives the information content of an XML document from an <a href="https://www.w3.org/TR/xml/#dt-xml-proc">XML processor</a>. [<a id="dt-xml-stylesheet-processor">Definition</a>: An <strong>xml-stylesheet processor</strong> is such an application which processes XML <a href="https://www.w3.org/TR/xml/#sec-pi">processing instructions</a> in accordance with this specification.] <a href="#xml">[XML]</a></p>
+<p>An <a href="#dt-xml-stylesheet-processor">xml-stylesheet processor</a> is considered to be a conforming <a href="#dt-xml-stylesheet-processor">xml-stylesheet processor</a> if it satisfies all <strong>must</strong>-level criteria in this specification that apply to <a href="#dt-xml-stylesheet-processor">xml-stylesheet processors</a>. <a href="#dt-xml-stylesheet-processor">xml-stylesheet processors</a> do not have to check or enforce any of the constraints on documents.</p></li>
+<li>Applications</li>
+<li>
+<p>An <a href="#dt-xml-stylesheet-processor">xml-stylesheet processor</a><strong>may</strong> be part of a larger XML application, or <strong>may</strong> function independently. In either case, [<a id="dt-application">Definition</a>: an <strong>application</strong> is the consumer of the pseudo-attribute analysis defined in this specification.]</p>
+<p>A detailed specification of how <a href="#dt-application">applications</a> exploit the information contained in <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a> is out of scope for this document, as this may reasonably vary from application to application. Accordingly this specification places no conformance requirements on applications.</p>
+<p>It is however expected that specifications governing the use of stylesheet languages will reference this specification in describing how applications may identify stylesheets for use. Such specifications are expected to specify interpretations for the values (or absense of value) of those <a href="#dt-pseudo-attribute">pseudo-attributes</a> which they make use of, doing so in a way that is as consistent as possible with those <a href="#dt-pseudo-attribute">pseudo-attributes'</a> descriptions in <a href="#the-xml-stylesheet-processing-instruction"><strong>4 The xml-stylesheet processing instruction</strong></a>, insofar as this makes sense for the application and stylesheet language(s) in question.</p></li></ul>
+<p>This specification is defined with reference to the vocabulary for XML provided by the XML Information Set. <a href="#infoset">[INFOSET]</a></p>
+<p>The productions in this specification use the same notation as used in the XML specification. Tokens in the grammar that are not defined in this specification are defined in the XML specification. <a href="#xml">[XML]</a></p>
+<h2 id="pseudo-attributes">3 Pseudo-attributes</h2>
+<p>[<a id="dt-parsing">Definition</a>: The <strong>rules for parsing pseudo-attributes from a string</strong> are given in this section.]</p>
+<p>[<a id="dt-parsing-result">Definition</a>: The <strong>parsing result</strong> is either a set of <a href="#dt-pseudo-attribute">pseudo-attributes</a> or an error.]</p>
+<p>If the given string is not matched by the <a href="#NT-PseudoAtts">PseudoAtts</a> production, the <a href="#dt-parsing-result">parsing result</a> is an error.</p>
+<h3 id="d0e323">Productions for strings with pseudo-attributes</h3>
+<table>
+<tr>
+<td id="NT-PseudoAtts">[1a]   </td>
+<td><code>PseudoAtts</code></td>
+<td>   ::=   </td>
+<td><code><a href="#NT-PseudoAtt">PseudoAtt</a>? (<a href="https://www.w3.org/TR/xml/#NT-S">S</a><a href="#NT-PseudoAtt">PseudoAtt</a>)* <a href="https://www.w3.org/TR/xml/#NT-S">S</a>?</code></td></tr>
+<tr>
+<td id="NT-PseudoAtt">[2]   </td>
+<td><code>PseudoAtt</code></td>
+<td>   ::=   </td>
+<td><code><a href="https://www.w3.org/TR/xml/#NT-Name">Name</a><a href="https://www.w3.org/TR/xml/#NT-S">S</a>? &quot;=&quot; <a href="https://www.w3.org/TR/xml/#NT-S">S</a>? <a href="#NT-PseudoAttValue">PseudoAttValue</a></code></td></tr>
+<tr>
+<td id="NT-PseudoAttValue">[3]   </td>
+<td><code>PseudoAttValue</code></td>
+<td>   ::=   </td>
+<td><code>('&quot;' ([^&quot;&lt;&amp;] | <a href="https://www.w3.org/TR/xml/#NT-CharRef">CharRef</a> | <a href="#NT-PredefEntityRef">PredefEntityRef</a>)* '&quot;' | &quot;'&quot; ([^'&lt;&amp;] | <a href="https://www.w3.org/TR/xml/#NT-CharRef">CharRef</a> | <a href="#NT-PredefEntityRef">PredefEntityRef</a>)* &quot;'&quot;)</code></td></tr>
+<tr>
+<td id="NT-PredefEntityRef">[4]   </td>
+<td><code>PredefEntityRef</code></td>
+<td>   ::=   </td>
+<td><code>&quot;&amp;amp;&quot; | &quot;&amp;lt;&quot; | &quot;&amp;gt;&quot; | &quot;&amp;quot;&quot; | &quot;&amp;apos;&quot;</code></td></tr></table>
+<p> [<a id="dt-pseudo-attribute">Definition</a>: Each string matched by <a href="#NT-PseudoAtt">PseudoAtt</a> in the <a href="#NT-PseudoAtts">PseudoAtts</a> production represents a <strong>pseudo-attribute</strong>.] A <a href="#dt-pseudo-attribute">pseudo-attribute</a> has a <a href="#dt-name">name</a> and a <a href="#dt-value">value</a>. </p>
+<p> [<a id="dt-name">Definition</a>: The string matched by <a href="https://www.w3.org/TR/xml/#NT-Name">Name</a> in the <a href="#NT-PseudoAtt">PseudoAtt</a> production constitutes the <strong>name</strong> of the corresponding <a href="#dt-pseudo-attribute">pseudo-attribute</a>.] </p>
+<p> [<a id="dt-value">Definition</a>: The string matched by <a href="#NT-PseudoAttValue">PseudoAttValue</a> in the <a href="#NT-PseudoAtt">PseudoAtt</a> production — with the three modifications specified below — constitutes the <strong>value</strong> of the corresponding <a href="#dt-pseudo-attribute">pseudo-attribute</a>.]</p>
+<ol>
+<li>
+<p>Each <a href="https://www.w3.org/TR/xml/#NT-CharRef">CharRef</a> is replaced with the character it represents according to XML <a href="#xml">[XML]</a>.</p></li>
+<li>
+<p>Each <a href="#NT-PredefEntityRef">PredefEntityRef</a> in <a href="#NT-PseudoAttValue">PseudoAttValue</a> is replaced with U+0026 (&amp;) if it is &quot;<code>&amp;amp;</code>&quot;, U+003C (&lt;) if it is &quot;<code>&amp;lt;</code>&quot;, U+003E (&gt;) if it is &quot;<code>&amp;gt;</code>&quot;, U+0022 (&quot;) if it is &quot;<code>&amp;quot;</code>&quot; and U+0027 (') if it is &quot;<code>&amp;apos;</code>&quot;.</p></li>
+<li>
+<p>The first and last character (the start and end quotes) are removed.</p></li></ol>
+<p>The <a href="#dt-parsing-result">parsing result</a> is an error if the XML <a href="https://www.w3.org/TR/xml/#wf-Legalchar">Legal Character well-formedness contraint</a> is violated for any <a href="https://www.w3.org/TR/xml/#NT-CharRef">CharRef</a>. <a href="#xml">[XML]</a></p>
+<p>The <a href="#dt-parsing-result">parsing result</a> is an error if there are more than one <a href="#dt-pseudo-attribute">pseudo-attribute</a> with the same <a href="#dt-name">name</a>.</p>
+<p>If the <a href="#dt-parsing-result">parsing result</a> is not an error, then it is the set of <a href="#dt-pseudo-attribute">pseudo-attributes</a> represented when the given string is matched by the <a href="#NT-PseudoAtts">PseudoAtts</a> production.</p>
+<h2 id="the-xml-stylesheet-processing-instruction">4 The xml-stylesheet processing instruction</h2>
+<p>[<a id="dt-potential-xml-stylesheet">Definition</a>: A processing instruction information item is said to be a <strong>potential xml-stylesheet processing instruction</strong> if it has the [target] property <code>xml-stylesheet</code> and it either is in the [children] property of a document information item and appears before the element information item of the document information item's [children] property, or it appears in the [children] property of a document type declaration information item.]</p>
+<p>For <a href="#dt-potential-xml-stylesheet">potential xml-stylesheet processing instructions</a> that are in the [children] property of a document information item, <a href="#dt-xml-stylesheet-processor">xml-stylesheet processors</a><strong>must</strong> report to the <a href="#dt-application">application</a> the <a href="#dt-parsing-result">parsing result</a> of invoking the <a href="#dt-parsing">rules for parsing pseudo-attributes from a string</a>, using the processing instruction information item's [content] property as the string.</p>
+<p>For <a href="#dt-potential-xml-stylesheet">potential xml-stylesheet processing instructions</a> that are in the [children] property of a document type declaration information item, <a href="#dt-xml-stylesheet-processor">xml-stylesheet processors</a><strong>may</strong> report to the <a href="#dt-application">application</a> the <a href="#dt-parsing-result">parsing result</a> of invoking the <a href="#dt-parsing">rules for parsing pseudo-attributes from a string</a>, using the processing instruction information item's [content] property as the string. [<a id="dt-ignored">Definition</a>: If it is not reported to the <a href="#dt-application">application</a>, the processing instruction information item is said to be <strong>ignored</strong>.]</p>
+<p><strong>Note:</strong></p>
+<p>Since non-validating XML processors are not required to read parameter entities or the external subset, it is possible that processing instructions that appear in parameter entities or the external subset will not be present in the document type declaration information item's [children] property. <a href="#xml">[XML]</a></p>
+<p>[<a id="dt-xml-stylesheet">Definition</a>: A <a href="#dt-potential-xml-stylesheet">potential xml-stylesheet processing instruction</a> is said to be an <strong>xml-stylesheet processing instruction</strong> if the <a href="#dt-parsing-result">parsing result</a> is not an error when invoking the <a href="#dt-parsing">rules for parsing pseudo-attributes from a string</a>, using the processing instruction information item's [content] property as the string.]</p>
+<p>Documents <strong>must not</strong> use processing instruction information items with the [target] property <code>xml-stylesheet</code> if they are not <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a>.</p>
+<p>Documents <strong>should not</strong> use <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a> that are in the [children] property of a document type declaration information item.</p>
+<p>An <a href="#dt-xml-stylesheet">xml-stylesheet processing instruction</a> will match the following production:</p>
+<h3 id="d0e611">Production for xml-stylesheet processing instruction</h3>
+<table>
+<tr>
+<td id="NT-StyleSheetPI">[1]   </td>
+<td><code>StyleSheetPI</code></td>
+<td>   ::=   </td>
+<td><code>&quot;&lt;?xml-stylesheet&quot; ( (<a href="https://www.w3.org/TR/xml/#NT-S">S</a><a href="#NT-PseudoAtts">PseudoAtts</a>)? - (<a href="https://www.w3.org/TR/xml/#NT-Char">Char</a>* &quot;?&gt;&quot; <a href="https://www.w3.org/TR/xml/#NT-Char">Char</a>*) ) &quot;?&gt;&quot;</code></td></tr></table>
+<p>Documents <strong>may</strong> specify the following <a href="#dt-pseudo-attribute">pseudo-attributes</a> on <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a>, unless otherwise stated:</p>
+<ul>
+<li><code id="PA-href">href</code></li>
+<li>
+<p>Gives the address of the referenced style sheet. Documents <strong>must</strong> specify this <a href="#dt-pseudo-attribute">pseudo-attribute</a>. Documents <strong>must</strong> set the <a href="#dt-value">value</a> to a string that matches the grammar for &lt;IRI-reference&gt; given in RFC 3987. <a href="#rfc3987">[RFC3987]</a></p>
+<p><strong>Note:</strong></p>
+<p>It is possible to associate a style sheet that is in the same document as the <a href="#dt-xml-stylesheet">xml-stylesheet processing instruction</a> by using just a fragment identifier in the <a href="#PA-href"><code>href</code></a><a href="#dt-pseudo-attribute">pseudo-attribute</a>.</p>
+<p>For details on how this is managed in XSLT, see <a href="https://www.w3.org/TR/xslt20/#embedded">3.11 Embedded Stylesheet Modules</a> in <a href="#xslt">[XSLT]</a>.</p></li>
+<li><code id="PA-type">type</code></li>
+<li>
+<p>Gives an advisory media type for the referenced style sheet. If specified, documents <strong>must</strong> set the <a href="#dt-value">value</a> to a string that matches the <code>media-type</code> production defined in section 3.7 &quot;Media Types&quot; of RFC 2616. <a href="#http">[RFC2616]</a></p>
+<p><strong>Note:</strong></p>
+<p><em>Syntactic</em> conformance to the production in RFC 2616 is all that is required by the above. This specification imposes no requirements with respect to the status of the types used. Some unregistered (as of the publication of this specification) media types, such as <code>text/xsl</code>, are well-supported by existing implementations, whereas some registered media types, such as <code>application/xslt+xml</code>, are not.</p>
+<p> The <a href="#dt-value">value</a> is advisory in that it is intended to be used by an application only when no other source of media type information becomes available during retrieval of the stylesheet itself.</p></li>
+<li><code id="PA-title">title</code></li>
+<li>
+<p>Gives the title of the referenced style sheet in a style sheet set. No constraints beyond those of the <a href="#NT-PseudoAttValue">PseudoAttValue</a> production are placed on the <a href="#dt-value">value</a>.</p></li>
+<li><code id="PA-media">media</code></li>
+<li>
+<p>Gives the media for which the referenced style sheet applies. If specified, documents <strong>must</strong> set the <a href="#dt-value">value</a> to a string that matches the <code>media_query_list</code> production of the Media Queries specification. <a href="#mq">[MQ]</a></p></li>
+<li><code id="PA-charset">charset</code></li>
+<li>
+<p>Gives an advisory character encoding for the referenced style sheet. If specified, documents <strong>must</strong> set the <a href="#dt-value">value</a> to a valid character encoding name, which <strong>must</strong> be the name or alias labeled as &quot;preferred MIME name&quot; in the IANA Character Sets registry, if there is one, or the encoding's name, if none of the aliases are so labeled. <a href="#ianacharset">[IANACHARSET]</a></p>
+<p> The <a href="#dt-value">value</a> is advisory in that it is intended to be used by an application only when no other source of encoding information becomes available during retrieval of the stylesheet itself, either explicitly via an HTTP header, or implicitly via its media type, as in the case of XML documents.</p></li>
+<li><code id="PA-alternate">alternate</code></li>
+<li>
+<p>If the <a href="#dt-value">value</a> is &quot;<code>yes</code>&quot;, it indicates that the referenced style sheet is an alternative style sheet, and documents <strong>must</strong> also specify the <a href="#PA-title"><code>title</code></a><a href="#dt-pseudo-attribute">pseudo-attribute</a> with a non-empty <a href="#dt-value">value</a>. If specified, documents <strong>must</strong> set the <a href="#dt-value">value</a> to either &quot;<code>yes</code>&quot; or &quot;<code>no</code>&quot;.</p></li></ul>
+<p>Documents <strong>must not</strong> specify other <a href="#dt-pseudo-attribute">pseudo-attributes</a> on <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a>.</p>
+<p>Any links to style sheets that are specified externally to the document (e.g. <code>Link</code> headers in some versions of HTTP <a href="#rfc2068">[RFC2068]</a>) are considered to create associations that occur before the associations specified by the <a href="#dt-xml-stylesheet">xml-stylesheet processing instructions</a>. The <a href="#dt-application">application</a> is responsible for taking all associations and determining how, if at all, their order affects its processing.</p>
+<h2 id="references">A References</h2>
+<p>References are normative unless marked &quot;non-normative&quot;.</p>
+<ul>
+<li id="ianacharset">IANACHARSET</li>
+<li><a href="http://www.iana.org/assignments/character-sets"><em>Character Sets</em></a>. IANA, May 2007. (See http://www.iana.org/assignments/character-sets.)</li>
+<li id="infoset">INFOSET</li>
+<li><a href="https://www.w3.org/TR/xml-infoset/"><em>XML Information Set</em></a>, J. Cowan, R. Tobin. W3C, February 2004. (See http://www.w3.org/TR/xml-infoset/.)</li>
+<li id="mq">MQ</li>
+<li><a href="https://www.w3.org/TR/css3-mediaqueries/"><em>Media Queries</em></a>, H. Lie, T. Çelik, D. Glazman, A. van Kesteren. W3C, April 2009. (See http://www.w3.org/TR/css3-mediaqueries/.)</li>
+<li id="rfc2068">RFC2068</li>
+<li>(non-normative) <a href="http://www.ietf.org/rfc/rfc2068.txt"><em>Hypertext Transfer Protocol — HTTP/1.1</em></a>, R. Fielding, J. Gettys, J. Mogul, H. Frystyk, T. Berners-Lee. IETF, June 1997. (See http://www.ietf.org/rfc/rfc2068.txt.)</li>
+<li id="rfc2119">RFC2119</li>
+<li><a href="http://www.ietf.org/rfc/rfc2119.txt"><em>Key words for use in RFCs to Indicate Requirement Levels</em></a>, S. Bradner. IETF, March 1997. (See http://www.ietf.org/rfc/rfc2119.txt.)</li>
+<li id="http">RFC2616</li>
+<li><a href="http://www.ietf.org/rfc/rfc2616.txt"><em>Hypertext Transfer Protocol — HTTP/1.1</em></a>, R. Fielding, J. Gettys, J. Mogul, H. Frystyk, L. Masinter, P. Leach, T. Berners-Lee. IETF, June 1999. (See http://www.ietf.org/rfc/rfc2616.txt.)</li>
+<li id="rfc3987">RFC3987</li>
+<li><a href="http://www.ietf.org/rfc/rfc3987.txt"><em>Internationalized Resource Identifiers (IRIs)</em></a>, M. Dürst, M. Suignard. IETF, January 2005. (See http://www.ietf.org/rfc/rfc3987.txt.)</li>
+<li id="xml">XML</li>
+<li><a href="https://www.w3.org/TR/xml/"><em>Extensible Markup Language</em></a>, T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau. W3C, November 2008. (See http://www.w3.org/TR/xml/.)</li>
+<li id="xslt">XSLT</li>
+<li>(non-normative) <a href="https://www.w3.org/TR/xslt20/"><em>XSL Transformations (XSLT) Version 2.0</em></a>, M. Kay. W3C, January 2007. (See http://www.w3.org/TR/xslt20/.)</li></ul>
+<h2 id="changes">B Changes since the first edition</h2>
+<p>This appendix is non-normative</p>
+<p>The first edition of this specification was admirably brief, but at the same time left many details unstated. This second edition aims to fill the gaps left in the first edition, while restructuring the presentation to provide for independent citation and re-use of the pseudo-attribute construct.</p>
+<p>Neither the syntax nor the semantics of the <code>xml-stylesheet</code> processing instructions have been changed, beyond the restructuring just mentioned. Conformance constraints on processors have been eased slightly, in that <code>xml-stylesheet</code> processing instructions occurring within the internal or external subset may be ignored.</p>
+<p>The following list identifies the major changes which have been made:</p>
+<ul>
+<li>
+<p>Provided definitions for a number of terms used but not defined in the first edition;</p></li>
+<li>
+<p>Added a conformance section, distinguishing between processor and document conformance, all of which was implicit in the first edition;</p></li>
+<li>
+<p>Identified a number of error cases, which were implicit in the first edition's appeal to the parallel with element start tag processing, and specified expected processor behaviour;</p></li>
+<li>
+<p>In recognition of deployed processor behaviour, allowed <code>xml-stylesheet</code> processing instructions to be ignored unless they are among the [children] of the document information item;</p></li>
+<li>
+<p>Added a number of references, but removed the explicit dependence on the HTML 4.0 specification by adding descriptions of the meanings of each of the pseudo-attributes consistent with their HTML 4.0 use but brought up-to-date;</p></li>
+<li>
+<p>Removed the (non-normative) Rationale section, as it contained a number of out-of-date assumptions;</p></li>
+<li>
+<p>Made the <code>type</code> pseudo-attribute optional, as agreed by <a href="https://www.w3.org/1999/06/REC-xml-stylesheet-19990629/errata">existing erratum</a>.</p></li></ul></article>

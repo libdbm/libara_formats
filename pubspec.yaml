@@ -1,0 +1,29 @@
+name: libara_formats
+description: >-
+  Markup syntaxes for libara: XML, HTML, Markdown, LMNL, man, ms, me, LaTeX,
+  JSON and Dart, each read into layers that write back character for
+  character.
+version: 0.2.3
+repository: https://github.com/libdbm/libara_formats
+topics:
+  - markup
+  - xml
+  - html
+  - markdown
+  - parsing
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  libara: ^0.2.3
+
+dev_dependencies:
+  # Reference parsers, used by the tests as something to check this
+  # library's own scanners against. Nothing in `lib` imports them.
+  _fe_analyzer_shared: ^110.0.0
+  analyzer: ^14.6.0
+  html: ^0.15.7
+  lints: ^6.1.0
+  test: ^1.33.0
+  xml: ^7.1.0

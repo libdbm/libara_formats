@@ -1,0 +1,343 @@
+[
+  {
+    "name": "xml nested elements",
+    "codec": "xml",
+    "source": "<p>a<i>b</i>c</p>",
+    "success": true,
+    "tokens": [
+      "p:<p>",
+      "i:<i>",
+      "i:</i>",
+      "p:</p>"
+    ],
+    "elements": [
+      "i",
+      "p"
+    ]
+  },
+  {
+    "name": "xml quoted greater-than",
+    "codec": "xml",
+    "source": "<a title=\"a > b\">x</a>",
+    "success": true,
+    "tokens": [
+      "a:<a title=\"a > b\">",
+      "a:</a>"
+    ],
+    "elements": [
+      "a"
+    ]
+  },
+  {
+    "name": "xml empty element",
+    "codec": "xml",
+    "source": "<p>a<br/>b</p>",
+    "success": true,
+    "tokens": [
+      "p:<p>",
+      "br:<br/>",
+      "p:</p>"
+    ],
+    "elements": [
+      "br",
+      "p"
+    ]
+  },
+  {
+    "name": "xml marks what it does not read as an element",
+    "codec": "xml",
+    "source": "<?x?><!doctype x><!--c--><p>x</p>",
+    "success": true,
+    "tokens": [
+      "#instruction:<?x?>",
+      "#declaration:<!doctype x>",
+      "#comment:<!--c-->",
+      "p:<p>",
+      "p:</p>"
+    ],
+    "elements": [
+      "p"
+    ]
+  },
+  {
+    "name": "xml mismatched close",
+    "codec": "xml",
+    "source": "<p>x</q>",
+    "success": false,
+    "fault": "closes"
+  },
+  {
+    "name": "xml unclosed element",
+    "codec": "xml",
+    "source": "<p>x",
+    "success": false,
+    "fault": "unclosed"
+  },
+  {
+    "name": "xml nameless tag",
+    "codec": "xml",
+    "source": "<>",
+    "success": false,
+    "fault": "no name"
+  },
+  {
+    "name": "html lowercases names",
+    "codec": "html",
+    "source": "<P>x</P>",
+    "success": true,
+    "tokens": [
+      "p:<P>",
+      "p:</P>"
+    ],
+    "elements": [
+      "p"
+    ]
+  },
+  {
+    "name": "html void element",
+    "codec": "html",
+    "source": "<p>a<br>b</p>",
+    "success": true,
+    "tokens": [
+      "p:<p>",
+      "br:<br>",
+      "p:</p>"
+    ],
+    "elements": [
+      "br",
+      "p"
+    ]
+  },
+  {
+    "name": "html mismatched tags are retained",
+    "codec": "html",
+    "source": "<p><b>x</p>",
+    "success": true,
+    "tokens": [
+      "p:<p>",
+      "b:<b>",
+      "p:</p>"
+    ],
+    "elements": [
+      "p"
+    ],
+    "diagnostics": [
+      "closes before <b>",
+      "unclosed html tag <b>"
+    ]
+  },
+  {
+    "name": "html marks a comment as showing nothing",
+    "codec": "html",
+    "source": "<!--c--><p>x</p>",
+    "success": true,
+    "tokens": [
+      "#comment:<!--c-->",
+      "p:<p>",
+      "p:</p>"
+    ],
+    "elements": [
+      "p"
+    ]
+  },
+  {
+    "name": "html unterminated tag is unmarked content",
+    "codec": "html",
+    "source": "x<p",
+    "success": true,
+    "tokens": [],
+    "elements": [],
+    "diagnostics": [
+      "unterminated html tag"
+    ]
+  },
+  {
+    "name": "html unclosed start token remains",
+    "codec": "html",
+    "source": "<p>x",
+    "success": true,
+    "tokens": [
+      "p:<p>"
+    ],
+    "elements": [],
+    "diagnostics": [
+      "unclosed html tag <p>"
+    ]
+  },
+  {
+    "name": "lmnl paired range",
+    "codec": "lmnl",
+    "source": "[p}x{p]",
+    "success": true,
+    "tokens": [
+      "p:[p}",
+      "p:{p]"
+    ],
+    "elements": [
+      "p"
+    ]
+  },
+  {
+    "name": "lmnl overlap",
+    "codec": "lmnl",
+    "source": "[s}[l}one{s] two{l]",
+    "success": true,
+    "tokens": [
+      "s:[s}",
+      "l:[l}",
+      "s:{s]",
+      "l:{l]"
+    ],
+    "elements": [
+      "l",
+      "s"
+    ]
+  },
+  {
+    "name": "lmnl annotation",
+    "codec": "lmnl",
+    "source": "[l [n}144{n]}x{l]",
+    "success": true,
+    "tokens": [
+      "l:[l [n}144{n]}",
+      "l:{l]"
+    ],
+    "elements": [
+      "l"
+    ]
+  },
+  {
+    "name": "lmnl anonymous range",
+    "codec": "lmnl",
+    "source": "a[}b{]c",
+    "success": true,
+    "tokens": [
+      ":[}",
+      ":{]"
+    ],
+    "elements": [
+      ""
+    ]
+  },
+  {
+    "name": "lmnl escaped delimiters",
+    "codec": "lmnl",
+    "source": "a \\[not a tag\\} b",
+    "success": true,
+    "tokens": [
+      "mark:\\",
+      "mark:\\"
+    ],
+    "elements": []
+  },
+  {
+    "name": "lmnl closed token may leave range open",
+    "codec": "lmnl",
+    "source": "[p}x",
+    "success": true,
+    "tokens": [
+      "p:[p}"
+    ],
+    "elements": []
+  },
+  {
+    "name": "lmnl unterminated token",
+    "codec": "lmnl",
+    "source": "[p x",
+    "success": false,
+    "fault": "unterminated"
+  },
+  {
+    "name": "markdown ATX heading",
+    "codec": "markdown",
+    "source": "## Title\n",
+    "success": true,
+    "tokens": [
+      "h2:## ",
+      "h2:"
+    ],
+    "elements": [
+      "h2"
+    ]
+  },
+  {
+    "name": "markdown emphasis and strong",
+    "codec": "markdown",
+    "source": "*a* **b**",
+    "success": true,
+    "tokens": [
+      "em:*",
+      "em:*",
+      "strong:**",
+      "strong:**"
+    ],
+    "elements": [
+      "#block",
+      "em",
+      "strong"
+    ]
+  },
+  {
+    "name": "markdown underscore markers",
+    "codec": "markdown",
+    "source": "_a_ __b__",
+    "success": true,
+    "tokens": [
+      "em:_",
+      "em:_",
+      "strong:__",
+      "strong:__"
+    ],
+    "elements": [
+      "#block",
+      "em",
+      "strong"
+    ]
+  },
+  {
+    "name": "markdown code shields markers",
+    "codec": "markdown",
+    "source": "`a * b`",
+    "success": true,
+    "tokens": [
+      "code:`",
+      "code:`"
+    ],
+    "elements": [
+      "#block",
+      "code"
+    ]
+  },
+  {
+    "name": "markdown escaped marker is content",
+    "codec": "markdown",
+    "source": "\\*plain",
+    "success": true,
+    "tokens": [
+      "mark:\\"
+    ],
+    "elements": [
+      "#block"
+    ]
+  },
+  {
+    "name": "markdown unmatched marker remains a token",
+    "codec": "markdown",
+    "source": "a * b",
+    "success": true,
+    "tokens": [],
+    "elements": [
+      "#block"
+    ]
+  },
+  {
+    "name": "markdown seven hashes are content",
+    "codec": "markdown",
+    "source": "####### title",
+    "success": true,
+    "tokens": [],
+    "elements": [
+      "#block"
+    ]
+  }
+]
