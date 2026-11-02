@@ -102,7 +102,8 @@ representation for, and in XML and HTML what would not nest.
 - **Tokens.** One per tag (`[name}` opens, `{name]` closes and `[name]`
   is an empty range), atom `{{name}}`, comment `[!-- --]` and escape `\x`,
   and one per run of text. A tag's annotations, `[l [n}144{n]}`, are
-  attributes holding the text they were written as.
+  attributes holding the text they were written as, each escape resolved:
+  what the LMNL writer escapes in a value reads back as the value it was.
 - **Elements.** An end tag closes the latest open start tag of its name
   and suffix, `[a=1}` closing at `{a=1]`, so elements may overlap, which
   is what LMNL is for. A tag that pairs with nothing is a diagnostic. An
@@ -160,6 +161,41 @@ its requests open.
   publication data, such as `\acmDOI`, shows nothing. A paragraph is a `p`
   saying `implied`. The preamble and the document are elements, and only
   the title and author in the preamble show.
+
+## RTF
+
+A document is read from the file's bytes, each the code point of the
+same value, so that the data after `\bin` is kept as it was.
+
+- **Tokens.** Each brace, each control word under its own name, saying
+  its parameter as `value` (with its data, for `\bin`), each control
+  symbol, `#symbol`, each `\'hh`, `#escape`, each `\uN` with the
+  fallback after it where that is `?` or one `\'hh`, `#unicode`, each run
+  of text below 128, `#text`, each byte past 127, `#character`, and each
+  run of line breaks, `#break`. A token that stands for characters says
+  them as `shows`, through Windows-1252 or, where the header says
+  `\mac`, MacRoman. A backslash before a line break is a paragraph mark,
+  as Cocoa writes one. What stands within a hidden destination, the
+  header's tables, a picture's data, a list item's number, a field's
+  instruction and every `{\*...}` group, shows nothing, its text
+  `#hidden`; reading which that is needs the groups around a token, so
+  the whole text is read again after a change.
+- **Elements.** Each hidden destination directly within the document
+  group, under its word. Each paragraph, named through the style table
+  from its `\sN` and `\outlinelevelN` and saying its style's name as
+  `class`, or a `p` where nothing names it, as in Cocoa's RTF, saying
+  `size` where it is all of one size other than the body's. Each face,
+  from the word that turns it on to the one that turns it off, `\plain`,
+  or its group's end, unless the paragraph's style sets it; a monospaced
+  font is `code`. List items through the list tables, grouped into `ul`
+  and `ol` and nested by `\ilvl`. Rows and cells as `table`, `tr`, and
+  `td`, or `th` where the row says `\trhdr`. A `HYPERLINK` field as an
+  `a` over its result, a footnote as `footnote`, a picture as `img`, and
+  revisions as `ins`, `del` and `format`, saying `author` and `date`.
+- **Edits** are refused, and RTF writes only a document read as RTF.
+- **Importing.** `importers['rtf']` gives the normalized LMNL document,
+  as the next section says, its revisions accepted unless asked to keep
+  them.
 
 ## JSON
 
@@ -231,6 +267,60 @@ its requests open.
 by projecting it onto its content: a `#text` token gives its text, a token
 that `shows` something gives that, and other markup gives nothing. Each
 element is placed over the content it covers, in the order its source
-nests them, and written as the target represents it. XML and HTML refuse
-elements that overlap. What a target has no representation for, such as a
-picture in roff, is refused with a reason.
+nests them, and written as the target represents it. What a target has no
+representation for, such as a picture in roff, is refused with a reason.
+
+XML, HTML, Markdown, LaTeX and roff write a tree, so where elements cross,
+as LMNL's may, they are cut until they nest:
+
+- **Rank.** A name is a block or an inline. The blocks are HTML's flow
+  content that is not phrasing content, and the names the other syntaxes
+  give what stands as a block, such as `abstract`, `author`, `equation`
+  and `title`; every other name is an inline.
+- **The rule.** Elements are placed blocks first, then by where they
+  start, the longer first. Each is cut at the edges of every element
+  placed before it that it crosses, and an element placed is not cut
+  again. So of a block and an inline that cross, the inline is cut, and
+  of two of one rank, the one that starts later is cut where the other
+  ends, as HTML's adoption agency cuts formatting: an `em` across two
+  paragraphs is an `em` in each.
+- **Marks.** XML marks each piece of an element it cut with `part`,
+  `initial`, `medial` or `final` as TEI has it, and `join`, which the
+  pieces of one element share and no other's do. An element that is cut
+  and already says either is refused. The other syntaxes leave the pieces
+  unmarked.
+
+Where no element crosses another, nothing is cut and each syntax writes
+what it wrote before.
+
+## Importing
+
+A word processor's file is imported, not read as a syntax: `importers`
+maps each format to a `Readable` that gives the file's content as LMNL,
+which is then edited and written as any document is. An import goes one
+way, and keeps what follows.
+
+- **Reading order.** What the file links, such as a table stored apart
+  from the text that refers to it, stands where it is referred to. A
+  syntax whose tokens are not in reading order, such as MIF, is `Linked`,
+  and the tree writers and LMNL refuse a document read in it: it is
+  converted by importing it.
+- **Blocks and styles.** A paragraph is named from its style, through
+  one table that every importer shares: `heading 1` is an `h1`, `List
+  Bullet` an item of a `ul`, `Quote` a `blockquote`, and so on, case and
+  spaces ignored, with an outline level the file gives taking precedence.
+  A name the table does not know is a `p`. Every paragraph and face says
+  its style's name as `class`.
+- **Direct formatting.** A document formatted by hand rather than by
+  style keeps its paragraphs as `p`s: a paragraph is a heading only where
+  its style or its outline level says so. One whose characters all share
+  a font size other than the body's says it as `size`, in points.
+- **Lists.** Consecutive items of one kind of list are one `ul` or `ol`,
+  and deeper items are a list held by the item before them.
+- **Faces.** A run of character formatting is one element, which may
+  cross paragraphs, as LMNL holds; a tree writer cuts it.
+- **Revisions**, where an importer is asked to keep them, are libara
+  annotations over the text, an `ins` or a `del` saying its `author` and
+  `date`. No grammar sees an annotation, so no syntax writes one, and each
+  moves with its characters through every edit. Otherwise every revision
+  is accepted.

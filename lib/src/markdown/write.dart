@@ -31,10 +31,24 @@ final class _Writer {
     // Whether what is written next begins a line: the block's first words,
     // or those after a line break.
     var line = true;
+    // Whether the last thing written was a block, which what is not a block
+    // after it stands apart from as a block would, or it runs on into it.
+    var blocked = false;
+    void part() {
+      if (blocked && !tail.endsWith('\n\n')) {
+        written.write(tail.endsWith('\n') ? '\n$indent' : '\n\n$indent');
+        tail = '\n\n';
+      }
+      blocked = false;
+    }
+
     var at = start;
     for (final kid in kids) {
       if (kid.start > at) {
         final said = _text(at, kid.start, indent, head: line);
+        if (said.trim().isNotEmpty) {
+          part();
+        }
         line = false;
         written.write(said);
         tail = _last(tail, said);
@@ -47,11 +61,20 @@ final class _Writer {
       // that says nothing gets nothing, since a paragraph holding one
       // picture is represented by the picture.
       final said = _element(kid, indent);
-      if (_blocks.contains(kid.name) &&
-          spoken &&
-          said.isNotEmpty &&
-          !tail.endsWith('\n\n')) {
+      final block = _blocks.contains(kid.name);
+      if (block && spoken && said.isNotEmpty && !tail.endsWith('\n\n')) {
         written.write(tail.endsWith('\n') ? '\n$indent' : '\n\n$indent');
+      } else if (!block && said.trim().isNotEmpty) {
+        part();
+      }
+      if (said.isNotEmpty) {
+        blocked = block;
+      }
+      // Two runs of `*` that meet read as one, as `***` and `**` do after
+      // an em ending in a strong, so a space parts them.
+      if (!block && tail.endsWith('*') && said.startsWith('*')) {
+        written.write(' ');
+        tail = _last(tail, ' ');
       }
       written.write(said);
       tail = _last(tail, said);
@@ -60,7 +83,11 @@ final class _Writer {
       at = kid.end;
     }
     if (end > at) {
-      written.write(_text(at, end, indent, head: line));
+      final said = _text(at, end, indent, head: line);
+      if (said.trim().isNotEmpty) {
+        part();
+      }
+      written.write(said);
     }
     return written.toString();
   }
@@ -98,9 +125,11 @@ final class _Writer {
       case 'h1' || 'h2' || 'h3' || 'h4' || 'h5' || 'h6':
         final level = int.parse(node.name.substring(1));
         return '${'#' * level} ${_inside(node, indent)}';
-      case 'em':
+      // HTML's b and i are emphasis too, which is how a browser and Google
+      // Docs put it on the clipboard.
+      case 'em' || 'i':
         return '*${_inside(node, indent)}*';
-      case 'strong':
+      case 'strong' || 'b':
         return '**${_inside(node, indent)}**';
       case 'code':
         // A fence longer than any run of backticks the code holds, and a
@@ -145,7 +174,7 @@ final class _Writer {
       case 'ul' || 'ol':
         return _list(node, indent);
       case 'table':
-        return _table(node.kids, indent);
+        return _table(_rows(node), indent);
       case 'head' when node.start == node.end && node.kids.isEmpty:
         // HTML implies a head on every page, and one that holds nothing
         // says nothing a reader of Markdown would see.
@@ -161,6 +190,20 @@ final class _Writer {
     }
   }
 
+  /// A table's rows, read through the head, body and foot that group them,
+  /// since HTML implies a body round rows a page writes bare.
+  static List<Node> _rows(Node table) => [
+    for (final kid in table.kids)
+      if (kid.name == 'tr')
+        kid
+      else if (_grouping.contains(kid.name))
+        for (final row in kid.kids)
+          if (row.name == 'tr') row,
+  ];
+
+  /// The elements that group a table's rows.
+  static const _grouping = {'thead', 'tbody', 'tfoot'};
+
   /// A table the extended way: a head, a line of dashes, then the rest.
   ///
   /// Extended Markdown has no way to say a table without a head, so the
@@ -168,19 +211,23 @@ final class _Writer {
   String _table(List<Node> rows, String indent) {
     final written = StringBuffer();
     for (final (index, row) in rows.indexed) {
+      final cells = [
+        for (final cell in row.kids)
+          if (cell.name == 'th' || cell.name == 'td') cell,
+      ];
       if (index > 0) {
         written.write('\n$indent');
       }
       written
         ..write('| ')
         ..write(
-          [for (final cell in row.kids) _celled(_inside(cell, ''))].join(' | '),
+          [for (final cell in cells) _celled(_inside(cell, ''))].join(' | '),
         )
         ..write(' |');
       if (index == 0) {
         written
           ..write('\n$indent| ')
-          ..write(List.filled(row.kids.length, '---').join(' | '))
+          ..write(List.filled(cells.length, '---').join(' | '))
           ..write(' |');
       }
     }

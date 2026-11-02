@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:libara/libara.dart';
 import 'package:libara_formats/libara_formats.dart';
+import 'package:libara_formats/src/limits.dart' show bytes;
 import 'package:test/test.dart';
 
 import 'harness.dart';
@@ -65,5 +66,33 @@ void main() {
       document.apply(Edit(1, Insert(7, Text.of('<x><y><z></z></y></x>')))),
     ).document;
     expect(problems(next, 3), contains('elements nested deeper than 2'));
+  });
+
+  group('A syntax reading bytes', () {
+    test('takes every item from 0 to 255, and no items', () {
+      final all = Items.of([for (var item = 0; item < 256; item++) item]);
+      expect(bytes('rtf', all), isA<Success<Sequence<int>>>());
+      expect(bytes('rtf', Items.of(<int>[])), isA<Success<Sequence<int>>>());
+    });
+
+    test('refuses an item past 255 or below 0, naming it and where', () {
+      for (final (item, at) in [(256, 2), (-1, 0)]) {
+        final form = Items.of([
+          if (at > 0) ...[65, 66],
+          item,
+          67,
+        ]);
+        expect(
+          bytes('rtf', form),
+          isA<Failure<Sequence<int>>>()
+              .having((failure) => failure.kind, 'kind', Kind.syntax)
+              .having(
+                (failure) => failure.message,
+                'message',
+                allOf(contains('rtf'), contains('$item'), contains('$at')),
+              ),
+        );
+      }
+    });
   });
 }

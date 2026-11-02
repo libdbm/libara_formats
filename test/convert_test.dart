@@ -23,6 +23,125 @@ void main() {
   String written(Syntax from, Syntax to, String text) =>
       string(value(converted(from, to, text)));
 
+  group('Elements that cross, written as a tree', () {
+    // Each LMNL text, with what XML makes of it: the inline is cut where it
+    // crosses a block, and of two inlines the later is cut.
+    const cases = {
+      'an em across two paragraphs is an em in each': (
+        '[p}aa[em}bb{p][p}cc{em]dd{p]',
+        '<p>aa<em part="initial" join="1">bb</em></p>'
+            '<p><em part="final" join="1">cc</em>dd</p>',
+      ),
+      'of an em and a strong that cross, the strong is cut': (
+        '[em}aa[strong}bb{em]cc{strong]',
+        '<em>aa<strong part="initial" join="1">bb</strong></em>'
+            '<strong part="final" join="1">cc</strong>',
+      ),
+      'a paragraph starting inside an em is whole, the em cut': (
+        '[em}aa[p}bb{em]cc{p]',
+        '<em part="initial" join="1">aa</em>'
+            '<p><em part="final" join="1">bb</em>cc</p>',
+      ),
+      'an em across three paragraphs is three pieces': (
+        '[p}a[em}b{p][p}c{p][p}d{em]e{p]',
+        '<p>a<em part="initial" join="1">b</em></p>'
+            '<p><em part="medial" join="1">c</em></p>'
+            '<p><em part="final" join="1">d</em>e</p>',
+      ),
+      'an em across two cells is an em in each': (
+        '[table}[tr}[td}a[em}b{td][td}c{em]d{td]{tr]{table]',
+        '<table><tr><td>a<em part="initial" join="1">b</em></td>'
+            '<td><em part="final" join="1">c</em>d</td></tr></table>',
+      ),
+    };
+    for (final MapEntry(key: name, value: (text, tree)) in cases.entries) {
+      test(name, () => expect(written(lmnl, xml, text), tree));
+    }
+
+    test('two elements cut say different joins', () {
+      expect(
+        written(lmnl, xml, '[p}[em}a{p][p}b{em][strong}c{p][p}d{strong]{p]'),
+        '<p><em part="initial" join="1">a</em></p>'
+        '<p><em part="final" join="1">b</em>'
+        '<strong part="initial" join="2">c</strong></p>'
+        '<p><strong part="final" join="2">d</strong></p>',
+      );
+    });
+
+    test('an element cut that already says part or join is refused', () {
+      for (final key in ['part', 'join']) {
+        expect(
+          converted(lmnl, xml, '[p}a[em [$key}x{$key]}b{p][p}c{em]{p]'),
+          isA<Failure<Sequence<int>>>()
+              .having((failure) => failure.kind, 'kind', Kind.invalid)
+              .having((failure) => failure.message, 'message', contains(key)),
+        );
+      }
+    });
+
+    test('an element not cut is written with what it says', () {
+      expect(
+        written(lmnl, xml, '[em [part}x{part]}a{em]'),
+        '<em part="x">a</em>',
+      );
+    });
+
+    // What the other tree writers make of the same texts, in order. LaTeX
+    // has no tables, so that is not asserted.
+    const others = {
+      'html': [
+        '<p>aa<em>bb</em></p><p><em>cc</em>dd</p>',
+        '<em>aa<strong>bb</strong></em><strong>cc</strong>',
+        '<em>aa</em><p><em>bb</em>cc</p>',
+        '<p>a<em>b</em></p><p><em>c</em></p><p><em>d</em>e</p>',
+        '<table><tr><td>a<em>b</em></td><td><em>c</em>d</td></tr></table>',
+      ],
+      'markdown': [
+        'aa*bb*\n\n*cc*dd',
+        '*aa**bb*** **cc**',
+        '*aa*\n\n*bb*cc',
+        'a*b*\n\n*c*\n\n*d*e',
+        '| a*b* | *c*d |\n| --- | --- |',
+      ],
+      'latex': [
+        '\\documentclass{article}\n\\begin{document}\naa\\emph{bb}\n\n\\emph{cc}dd\n\\end{document}\n',
+        '\\documentclass{article}\n\\begin{document}\n\\emph{aa\\textbf{bb}}\\textbf{cc}\n\\end{document}\n',
+        '\\documentclass{article}\n\\begin{document}\n\\emph{aa}\n\n\\emph{bb}cc\n\\end{document}\n',
+        '\\documentclass{article}\n\\begin{document}\na\\emph{b}\n\n\\emph{c}\n\n\\emph{d}e\n\\end{document}\n',
+        null,
+      ],
+      'man': [
+        '.PP\naa\\fIbb\\fP\n.PP\n\\fIcc\\fPdd',
+        '\\fIaa\\fBbb\\fP\\fR\\fBcc\\fP',
+        '\\fIaa\\fP\n.PP\n\\fIbb\\fPcc',
+        '.PP\na\\fIb\\fP\n.PP\n\\fIc\\fP\n.PP\n\\fId\\fPe',
+        '.TS\nl l.\na\\fIb\\fP\t\\fIc\\fPd\n.TE\n',
+      ],
+    };
+    final texts = [for (final (text, _) in cases.values) text];
+    for (final MapEntry(key: to, value: expected) in others.entries) {
+      test('the same, written as $to', () {
+        for (final (index, text) in texts.indexed) {
+          if (expected[index] case final String tree) {
+            expect(written(lmnl, formats[to]!, text), tree, reason: text);
+          }
+        }
+      });
+    }
+  });
+
+  test('Markdown parts two runs of * that would meet with a space', () {
+    // An em ending in a strong, then a strong: `***` and `**` that met
+    // would read back as neither.
+    const text = '<em>aa<strong>bb</strong></em><strong>cc</strong>';
+    final written = string(value(const Markdown().encode(decoded(xml, text))));
+    expect(written, '*aa**bb*** **cc**');
+    expect(
+      string(value(xml.encode(decoded(const Markdown(), written)))),
+      '<p><em>aa<strong>bb</strong></em> <strong>cc</strong></p>',
+    );
+  });
+
   group('A document written in a syntax', () {
     test('in its own is its text', () {
       const text = '<p>The <i>quick</i> brown fox.</p>';
@@ -48,21 +167,16 @@ void main() {
       expect(written(xml, lmnl, '<a>x😀y😀z</a>'), '[a}x😀y😀z{a]');
     });
 
-    test('LMNL that overlaps is refused as XML and HTML, and kept as LMNL', () {
-      // a covers "xxyy" and b "yyzz": they cross in the content.
+    test('LMNL that overlaps is split as XML and HTML, and kept as LMNL', () {
+      // a covers "xxyy" and b "yyzz": they cross in the content, and b,
+      // starting later, is cut where a ends.
       const text = '[a}xx[b}yy{a]zz{b]';
-      for (final tree in [xml, html]) {
-        expect(
-          converted(lmnl, tree, text),
-          isA<Failure<Sequence<int>>>()
-              .having((failure) => failure.kind, 'kind', Kind.invalid)
-              .having(
-                (failure) => failure.message,
-                'message',
-                contains('overlapping'),
-              ),
-        );
-      }
+      expect(
+        written(lmnl, xml, text),
+        '<a>xx<b part="initial" join="1">yy</b></a>'
+        '<b part="final" join="1">zz</b>',
+      );
+      expect(written(lmnl, html, text), '<a>xx<b>yy</b></a><b>zz</b>');
       expect(written(lmnl, lmnl, text), text);
     });
 
@@ -134,18 +248,14 @@ void main() {
             from,
             File('test/samples/$name.$extension').readAsStringSync(),
           );
+          // No sample has elements that cross, so each is written whole.
           for (final to in [xml, lmnl]) {
-            switch (to.encode(document)) {
-              case Failure(:final message):
-                expect(message, contains('overlapping'), reason: '$to');
-                expect(from, lmnl);
-              case Success(value: final written):
-                expect(
-                  says(decoded(to, string(written))),
-                  says(document),
-                  reason: '$to',
-                );
-            }
+            final written = value(to.encode(document));
+            expect(
+              says(decoded(to, string(written))),
+              says(document),
+              reason: '$to',
+            );
           }
         });
       }

@@ -1,0 +1,426 @@
+{
+  "reference": "textutil",
+  "blocks": [
+    {
+      "name": "p",
+      "text": "Lorem Ipsum"
+    },
+    {
+      "name": "p",
+      "text": "Dolor sit amet"
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e2 and H2O, tempor() and bold italic. See the lorem site.1"
+    },
+    {
+      "name": "p",
+      "text": "Consectetur adipiscing"
+    },
+    {
+      "name": "li",
+      "text": "Sed do eiusmod",
+      "list": "ul",
+      "level": 1
+    },
+    {
+      "name": "li",
+      "text": "Tempor incididunt",
+      "list": "ul",
+      "level": 2
+    },
+    {
+      "name": "li",
+      "text": "Ut labore",
+      "list": "ul",
+      "level": 3
+    },
+    {
+      "name": "li",
+      "text": "Et dolore",
+      "list": "ul",
+      "level": 2
+    },
+    {
+      "name": "li",
+      "text": "Magna aliqua",
+      "list": "ul",
+      "level": 1
+    },
+    {
+      "name": "li",
+      "text": "Ut enim ad minim",
+      "list": "ol",
+      "level": 1
+    },
+    {
+      "name": "li",
+      "text": "Quis nostrud",
+      "list": "ol",
+      "level": 1
+    },
+    {
+      "name": "p",
+      "text": "Exercitation ullamco"
+    },
+    {
+      "name": "p",
+      "text": "Duis aute irure dolor in reprehenderit."
+    },
+    {
+      "name": "td",
+      "text": "Lorem"
+    },
+    {
+      "name": "td",
+      "text": "Ipsum"
+    },
+    {
+      "name": "td",
+      "text": "Dolor"
+    },
+    {
+      "name": "td",
+      "text": "Sit amet"
+    },
+    {
+      "name": "td",
+      "text": "Consectetur"
+    },
+    {
+      "name": "td",
+      "text": "Adipiscing"
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "p",
+      "text": "1 Ut enim ad minim veniam, quis nostrud exercitation."
+    }
+  ],
+  "faces": [
+    {
+      "name": "strong",
+      "text": "Dolor sit amet"
+    },
+    {
+      "name": "strong",
+      "text": "Lorem ipsum dolor"
+    },
+    {
+      "name": "strong",
+      "text": "sit"
+    },
+    {
+      "name": "em",
+      "text": "sit"
+    },
+    {
+      "name": "strong",
+      "text": "amet,"
+    },
+    {
+      "name": "u",
+      "text": "consectetur"
+    },
+    {
+      "name": "strong",
+      "text": "consectetur"
+    },
+    {
+      "name": "strong",
+      "text": "adipiscing"
+    },
+    {
+      "name": "s",
+      "text": "elit"
+    },
+    {
+      "name": "strong",
+      "text": "elit"
+    },
+    {
+      "name": "strong",
+      "text": ", sed do e"
+    },
+    {
+      "name": "strong",
+      "text": "2"
+    },
+    {
+      "name": "sup",
+      "text": "2"
+    },
+    {
+      "name": "strong",
+      "text": "and H"
+    },
+    {
+      "name": "strong",
+      "text": "2"
+    },
+    {
+      "name": "sub",
+      "text": "2"
+    },
+    {
+      "name": "strong",
+      "text": "O,"
+    },
+    {
+      "name": "code",
+      "text": "tempor()"
+    },
+    {
+      "name": "strong",
+      "text": "tempor()"
+    },
+    {
+      "name": "strong",
+      "text": "and"
+    },
+    {
+      "name": "strong",
+      "text": "bold italic"
+    },
+    {
+      "name": "em",
+      "text": "bold italic"
+    },
+    {
+      "name": "strong",
+      "text": ". See"
+    },
+    {
+      "name": "a",
+      "text": "the lorem site",
+      "href": "https://example.com/lorem"
+    },
+    {
+      "name": "u",
+      "text": "the lorem site"
+    },
+    {
+      "name": "strong",
+      "text": "the lorem site"
+    },
+    {
+      "name": "strong",
+      "text": "."
+    },
+    {
+      "name": "strong",
+      "text": "1"
+    },
+    {
+      "name": "sup",
+      "text": "1"
+    },
+    {
+      "name": "strong",
+      "text": "Consectetur adipiscing"
+    },
+    {
+      "name": "strong",
+      "text": "Exercitation ullamco"
+    },
+    {
+      "name": "em",
+      "text": "Exercitation ullamco"
+    },
+    {
+      "name": "em",
+      "text": "Duis aute irure dolor in reprehenderit."
+    },
+    {
+      "name": "strong",
+      "text": "Lorem"
+    },
+    {
+      "name": "strong",
+      "text": "Ipsum"
+    },
+    {
+      "name": "em",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "sup",
+      "text": "1"
+    }
+  ],
+  "pandoc": {
+    "blocks": [
+      {
+        "name": "p",
+        "text": "Lorem Ipsum"
+      },
+      {
+        "name": "p",
+        "text": "Dolor sit amet Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e2 and H2O, tempor() and bold italic. See the lorem site.1"
+      },
+      {
+        "name": "p",
+        "text": "Consectetur adipiscing"
+      },
+      {
+        "name": "li",
+        "text": "Sed do eiusmod",
+        "list": "ul",
+        "level": 1
+      },
+      {
+        "name": "li",
+        "text": "Tempor incididunt",
+        "list": "ul",
+        "level": 2
+      },
+      {
+        "name": "li",
+        "text": "Ut labore",
+        "list": "ul",
+        "level": 3
+      },
+      {
+        "name": "li",
+        "text": "Et dolore",
+        "list": "ul",
+        "level": 2
+      },
+      {
+        "name": "li",
+        "text": "Magna aliqua",
+        "list": "ul",
+        "level": 1
+      },
+      {
+        "name": "li",
+        "text": "Ut enim ad minim",
+        "list": "ol",
+        "level": 1
+      },
+      {
+        "name": "li",
+        "text": "Quis nostrud",
+        "list": "ol",
+        "level": 1
+      },
+      {
+        "name": "p",
+        "text": "Exercitation ullamco"
+      },
+      {
+        "name": "p",
+        "text": "Duis aute irure dolor in reprehenderit."
+      },
+      {
+        "name": "p",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      },
+      {
+        "name": "p",
+        "text": "1 Ut enim ad minim veniam, quis nostrud exercitation."
+      }
+    ],
+    "faces": [
+      {
+        "name": "strong",
+        "text": "Dolor sit amet"
+      },
+      {
+        "name": "em",
+        "text": "sit"
+      },
+      {
+        "name": "u",
+        "text": "consectetur"
+      },
+      {
+        "name": "s",
+        "text": "elit"
+      },
+      {
+        "name": "sup",
+        "text": "2"
+      },
+      {
+        "name": "sub",
+        "text": "2"
+      },
+      {
+        "name": "code",
+        "text": "tempor()"
+      },
+      {
+        "name": "em",
+        "text": "bold italic"
+      },
+      {
+        "name": "a",
+        "text": "the lorem site",
+        "href": "https://example.com/lorem"
+      },
+      {
+        "name": "u",
+        "text": "the lorem site"
+      },
+      {
+        "name": "sup",
+        "text": "1"
+      },
+      {
+        "name": "strong",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e2 and H2O, tempor() and bold italic. See the lorem site.1"
+      },
+      {
+        "name": "em",
+        "text": "Exercitation ullamco"
+      },
+      {
+        "name": "strong",
+        "text": "Exercitation ullamco"
+      },
+      {
+        "name": "sup",
+        "text": "1"
+      }
+    ]
+  },
+  "disagreements": [
+    "pandoc lacks the block p \"Dolor sit amet\"",
+    "pandoc lacks the block p \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e2 and H2O, tempor() and bold italic. See the lorem site.1\"",
+    "pandoc lacks the block td \"Lorem\"",
+    "pandoc lacks the block td \"Ipsum\"",
+    "pandoc lacks the block td \"Dolor\"",
+    "pandoc lacks the block td \"Sit amet\"",
+    "pandoc lacks the block td \"Consectetur\"",
+    "pandoc lacks the block td \"Adipiscing\"",
+    "pandoc adds the block p \"Dolor sit amet Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e2 and H2O, tempor() and bold italic. See the lorem site.1\"",
+    "pandoc lacks the face strong \"Lorem ipsum dolor\"",
+    "pandoc lacks the face strong \"sit\"",
+    "pandoc lacks the face strong \"amet,\"",
+    "pandoc lacks the face strong \"consectetur\"",
+    "pandoc lacks the face strong \"adipiscing\"",
+    "pandoc lacks the face strong \"elit\"",
+    "pandoc lacks the face strong \", sed do e\"",
+    "pandoc lacks the face strong \"2\"",
+    "pandoc lacks the face strong \"and H\"",
+    "pandoc lacks the face strong \"2\"",
+    "pandoc lacks the face strong \"O,\"",
+    "pandoc lacks the face strong \"tempor()\"",
+    "pandoc lacks the face strong \"and\"",
+    "pandoc lacks the face strong \"bold italic\"",
+    "pandoc lacks the face strong \". See\"",
+    "pandoc lacks the face strong \"the lorem site\"",
+    "pandoc lacks the face strong \".\"",
+    "pandoc lacks the face strong \"1\"",
+    "pandoc lacks the face strong \"Consectetur adipiscing\"",
+    "pandoc lacks the face em \"Duis aute irure dolor in reprehenderit.\"",
+    "pandoc lacks the face strong \"Lorem\"",
+    "pandoc lacks the face strong \"Ipsum\"",
+    "pandoc lacks the face em \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\"",
+    "pandoc adds the face strong \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do e2 and H2O, tempor() and bold italic. See the lorem site.1\""
+  ]
+}

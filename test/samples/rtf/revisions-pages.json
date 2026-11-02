@@ -1,0 +1,59 @@
+{
+  "reference": "textutil",
+  "blocks": [
+    {
+      "name": "p",
+      "text": "Revisions"
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  ],
+  "faces": [
+    {
+      "name": "strong",
+      "text": "Revisions"
+    },
+    {
+      "name": "strong",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "strong",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  ],
+  "pandoc": {
+    "blocks": [
+      {
+        "name": "p",
+        "text": "Revisions Lorem ipsum dolor sit amet, consectetur adipiscing elit, incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      }
+    ],
+    "faces": [
+      {
+        "name": "strong",
+        "text": "Revisions"
+      },
+      {
+        "name": "strong",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, incididunt ut labore et dolore magna aliqua."
+      },
+      {
+        "name": "strong",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      }
+    ]
+  },
+  "disagreements": [
+    "pandoc lacks the block p \"Revisions\"",
+    "pandoc lacks the block p \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, incididunt ut labore et dolore magna aliqua.\"",
+    "pandoc lacks the block p \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\"",
+    "pandoc adds the block p \"Revisions Lorem ipsum dolor sit amet, consectetur adipiscing elit, incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\""
+  ]
+}

@@ -52,3 +52,20 @@ Result<Layered<int>> decoded(
     indexed: indexed,
   ).flatMap((document) => bounded(syntax, document));
 }
+
+/// [form], or a [Kind.syntax] failure naming [syntax] and the first item
+/// that is not a byte, 0 to 255: what a syntax reading a file's bytes is
+/// given, so that text decoded by mistake is refused at once.
+Result<Sequence<int>> bytes(String syntax, Sequence<int> form) {
+  var position = 0;
+  for (final item in form.items) {
+    if (item < 0 || item > 255) {
+      return Failure(
+        Kind.syntax,
+        '$syntax: item $item at $position is not a byte',
+      );
+    }
+    position++;
+  }
+  return Success(form);
+}

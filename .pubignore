@@ -10,5 +10,5 @@ pubspec.lock
 .github/
 
 # Planning files for this work, kept out of the package and the repository.
-SPEC.md
+SPEC*.md
 tasks/

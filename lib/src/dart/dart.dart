@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:libara/libara.dart';
 
 import '../editing.dart';
+import '../formats.dart';
 import '../lexing.dart';
 import '../limits.dart';
 import '../positions.dart';
@@ -87,7 +88,7 @@ part 'statements.dart';
 /// Only the characters of strings and comments are text, so a text edit
 /// elsewhere is not valid, and no structural edit is carried out yet. A
 /// document read in another syntax is not written as Dart.
-final class Dart implements Format<Layered<int>, Sequence<int>> {
+final class Dart implements Syntax {
   /// The Dart syntax, reading within [limits].
   const Dart({this.limits = standard});
 

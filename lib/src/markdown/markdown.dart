@@ -4,6 +4,7 @@ import 'package:libara/libara.dart';
 
 import '../convert.dart';
 import '../editing.dart';
+import '../formats.dart';
 import '../kinds.dart';
 import '../lexing.dart';
 import '../limits.dart';
@@ -41,7 +42,7 @@ part 'write.dart';
 /// from its own start. An edit is read again from a place no block spans
 /// to one past the edit where the new reading has nothing open: see
 /// [_Grammar._window].
-final class Markdown implements Format<Layered<int>, Sequence<int>> {
+final class Markdown implements Syntax {
   /// The Markdown syntax, reading within [limits].
   const Markdown({this.limits = standard});
 

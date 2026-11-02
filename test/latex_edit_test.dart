@@ -15,30 +15,6 @@ void main() {
 
   Layered<int> read(String text) => decoded(latex, text);
 
-  /// The marker of [document]'s first element called [name].
-  Marker element(Layered<int> document, String name) =>
-      document.markers(3).firstWhere((pair) => said(pair.$2, '') == name).$1;
-
-  /// A new element saying [attributes] over [length] tokens from [start].
-  ARange over(int start, int length, Map<String, String> attributes) => value(
-    ARange.create(
-      start,
-      length,
-      attributes: {
-        for (final MapEntry(:key, :value) in attributes.entries)
-          key: Str(Text.of(value)),
-      },
-    ),
-  );
-
-  /// The index of [document]'s token covering [words].
-  int at(Layered<int> document, String words) =>
-      tokens(document).indexWhere((token) => token.$2 == words);
-
-  /// [document]'s element under [marker].
-  ARange marked(Layered<int> document, Marker marker) =>
-      document.markers(3).firstWhere((pair) => pair.$1 == marker).$2;
-
   group('Layer 2: markup', () {
     test('an inline element is written a command and a brace at a time', () {
       var document = read('a b c');

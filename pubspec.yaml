@@ -1,9 +1,9 @@
 name: libara_formats
 description: >-
   Markup syntaxes for libara: XML, HTML, Markdown, LMNL, man, ms, me, LaTeX,
-  JSON and Dart, each read into layers that write back character for
-  character.
-version: 0.2.3
+  RTF, JSON and Dart, each read into layers that write back character for
+  character, and an RTF importer.
+version: 0.2.4
 repository: https://github.com/libdbm/libara_formats
 topics:
   - markup
@@ -11,6 +11,7 @@ topics:
   - html
   - markdown
   - parsing
+  - rtf
 
 environment:
   sdk: ^3.13.0

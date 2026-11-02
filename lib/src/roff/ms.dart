@@ -5,7 +5,7 @@ part of 'roff.dart';
 /// Its table reads a title, its authors and their affiliations, an
 /// abstract, numbered headings, quotations, displays, footnotes and keeps;
 /// what else a paper says is a `#pi` showing nothing.
-final class Ms implements Format<Layered<int>, Sequence<int>> {
+final class Ms implements Syntax {
   /// The ms package, reading within [limits].
   const Ms({this.limits = standard});
 

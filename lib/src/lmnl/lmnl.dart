@@ -4,6 +4,7 @@ import 'package:libara/libara.dart';
 
 import '../convert.dart';
 import '../editing.dart';
+import '../formats.dart';
 import '../kinds.dart';
 import '../lexing.dart';
 import '../limits.dart';
@@ -21,7 +22,8 @@ part 'edits.dart';
 /// `\x`, and
 /// one per run of text between them. A tag's name is under the empty key,
 /// and each annotation is an attribute holding the text it was written as,
-/// whatever ranges that text represents. An escape covers the backslash and the
+/// its escapes resolved, whatever ranges that text represents. An escape
+/// covers the backslash and the
 /// character it escapes, with a `shows` attribute saying the character, so
 /// that every token can be read from its own start. What does not scan is
 /// a `#text` token with a diagnostic over it.
@@ -32,7 +34,7 @@ part 'edits.dart';
 /// start tag's name and annotations, and those of its end tag the start tag
 /// does not say. An empty range and an atom are each an element over its
 /// one tag.
-final class LMNL implements Format<Layered<int>, Sequence<int>> {
+final class LMNL implements Syntax {
   /// The LMNL syntax, reading within [limits].
   const LMNL({this.limits = standard});
 
@@ -52,48 +54,90 @@ final class LMNL implements Format<Layered<int>, Sequence<int>> {
       value.grammar is _Grammar ? Success(value.items) : _written(value);
 }
 
-/// [document], read in another syntax, written as LMNL: at each token's
-/// edge, the ranges ending there close, the last opened first, and then
-/// those starting there open, the outermost first.
+/// [document], read in another syntax, written as LMNL.
 Result<Sequence<int>> _written(Layered<int> document) {
+  if (linked<Sequence<int>>(document, 'lmnl') case final refusal?) {
+    return refusal;
+  }
   final (:content, :offsets, :elements) = projected(document);
-  final starting = <int, List<Placed>>{};
-  for (final element in elements) {
+  return sawtooth(content, offsets, elements);
+}
+
+/// [content] with each of [elements] a range over it, written as LMNL,
+/// [offsets] saying where each token's share of [content] starts and where
+/// the last ends; or a refusal where an element's name or an attribute's
+/// is one a tag cannot hold.
+///
+/// At each edge the ranges ending there close, the last opened first, and
+/// then those starting there open, the outermost first. A range that
+/// outlasts an open range of its name that it crosses takes a suffix, the
+/// smallest number that no such range has, so that each end tag closes the
+/// range it ends: LMNL closes the latest open range of a name and suffix.
+Result<Sequence<int>> sawtooth(
+  String content,
+  List<int> offsets,
+  List<Placed> elements,
+) {
+  final starting = <int, List<int>>{};
+  for (final (index, element) in elements.indexed) {
     if (_unrepresentable(element.name, element.said) case final String why) {
       return Failure(Kind.invalid, 'lmnl: $why');
     }
-    (starting[element.first] ??= []).add(element);
+    (starting[element.first] ??= []).add(index);
   }
   final written = StringBuffer();
-  final open = <Placed>[];
+  // Each open range, by its index in [elements], with its suffix: 0 for
+  // none.
+  final open = <(int, int)>[];
+  String tag(Placed element, int suffix) =>
+      suffix == 0 ? element.name : '${element.name}=$suffix';
   for (var edge = 0; edge < offsets.length; edge++) {
     if (edge > 0) {
       written.write(
         _escaped(content.substring(offsets[edge - 1], offsets[edge])),
       );
     }
-    for (final element in open.reversed.toList()) {
+    for (final (index, suffix) in open.reversed.toList()) {
+      final element = elements[index];
       if (element.last == edge) {
-        written.write('{${element.name}]');
-        open.remove(element);
+        written.write('{${tag(element, suffix)}]');
+        open.remove((index, suffix));
       }
     }
-    for (final element in starting[edge] ?? const <Placed>[]) {
-      written.write('[${element.name}');
-      for (final MapEntry(:key, :value) in element.said.entries) {
-        written.write(' [$key}${_escaped(value)}{$key]');
-      }
+    for (final index in starting[edge] ?? const <int>[]) {
+      final element = elements[index];
       // An element holding no content is an empty range, one tag of its
       // own.
       if (offsets[element.last] == offsets[element.first]) {
+        written.write('[${element.name}');
+        _said(written, element.said);
         written.write(']');
-      } else {
-        written.write('}');
-        open.add(element);
+        continue;
       }
+      final taken = {
+        for (final (other, suffix) in open)
+          if (elements[other].name == element.name &&
+              elements[other].last < element.last)
+            suffix,
+      };
+      var suffix = 0;
+      while (taken.contains(suffix)) {
+        suffix++;
+      }
+      written.write('[${tag(element, suffix)}');
+      _said(written, element.said);
+      written.write('}');
+      open.add((index, suffix));
     }
   }
   return Success(Text.of(written.toString()));
+}
+
+/// [said] written into [written] as a tag's annotations.
+void _said(StringBuffer written, Map<String, String> said) {
+  for (final MapEntry(:key, :value) in said.entries) {
+    written.write(' [$key}${_escaped(value)}{$key]');
+  }
 }
 
 /// [words] with what LMNL reads as markup escaped.
@@ -412,8 +456,10 @@ final class _Grammar implements Grammar<int> {
   }
 
   /// The annotations of a start tag, each `[name}value{name]`, as
-  /// attributes holding their values as written; and a problem where one
-  /// has no name, which the empty key, the tag's own name, cannot hold.
+  /// attributes holding their values with each escape resolved, `\[` as
+  /// `[`, and what they hold unescaped, ranges of their own among it, as it
+  /// stands; and a problem where one has no name, which the empty key, the
+  /// tag's own name, cannot hold.
   static (Map<String, Value>, String?) _annotations(String tag) {
     final found = <String, Value>{};
     String? problem;
@@ -440,7 +486,14 @@ final class _Grammar implements Grammar<int> {
       if (name.isEmpty) {
         problem = 'an annotation with no name';
       } else {
-        found[name] = literal(tag.substring(brace + 1, close));
+        found[name] = literal(
+          tag
+              .substring(brace + 1, close)
+              .replaceAllMapped(
+                RegExp(r'\\(.)', dotAll: true),
+                (match) => match[1]!,
+              ),
+        );
       }
       at = close + name.length + 2;
     }

@@ -6,3 +6,7 @@ pubspec.lock
 .idea
 .claude
 .junie
+
+# Planning files, kept out of the package and the repository.
+SPEC*.md
+tasks/

@@ -4,6 +4,7 @@ import 'package:libara/libara.dart';
 
 import '../convert.dart';
 import '../editing.dart';
+import '../formats.dart';
 import '../kinds.dart';
 import 'legacy.dart';
 import '../lexing.dart';
@@ -37,7 +38,7 @@ part 'tree.dart';
 /// on, as in a browser and in `package:html`, so `noscript` holds text.
 /// Not followed: the escapes inside a script, where `<!--` changes what
 /// ends it.
-final class HTML implements Format<Layered<int>, Sequence<int>> {
+final class HTML implements Syntax {
   /// The HTML syntax, reading within [limits].
   const HTML({this.limits = standard});
 

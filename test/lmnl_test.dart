@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:libara/libara.dart';
 import 'package:libara_formats/libara_formats.dart';
+import 'package:libara_formats/src/lmnl/lmnl.dart' show sawtooth;
 import 'package:test/test.dart';
 
 import 'harness.dart';
@@ -51,7 +52,8 @@ void main() {
 
     test('an annotation ends at its end tag, not at one escaped', () {
       final document = decoded(lmnl, r'[l [n}{a\{n]b{n]}x{l]');
-      expect(said(token(document, 0), 'n'), r'{a\{n]b');
+      // The escape is resolved in what the annotation says.
+      expect(said(token(document, 0), 'n'), '{a{n]b');
       expect(problems(document, 2), isEmpty);
     });
 
@@ -283,5 +285,47 @@ void main() {
         expect(problems(decoded(lmnl, text), 2), isEmpty);
       });
     }
+  });
+
+  group('Content and ranges written as LMNL', () {
+    /// A range named [name] over tokens [first] to [last].
+    ({int first, int last, int depth, String name, Map<String, String> said})
+    placed(String name, int first, int last) =>
+        (first: first, last: last, depth: 0, name: name, said: const {});
+
+    // The content 'aabbcc', one token per letter pair.
+    const content = 'aabbcc';
+    const offsets = [0, 2, 4, 6];
+
+    test('two ranges of one name that cross are told apart by a suffix', () {
+      final text = string(
+        value(
+          sawtooth(content, offsets, [placed('em', 0, 2), placed('em', 1, 3)]),
+        ),
+      );
+      expect(text, '[em}aa[em=1}bb{em]cc{em=1]');
+      final document = decoded(lmnl, text);
+      expect(
+        [
+          for (final (range, covered) in covering(document))
+            (said(range, ''), covered),
+        ],
+        [('em', '[em}aa[em=1}bb{em]'), ('em', '[em=1}bb{em]cc{em=1]')],
+      );
+    });
+
+    test('ranges of one name that nest need no suffix', () {
+      expect(
+        string(
+          value(
+            sawtooth(content, offsets, [
+              placed('em', 0, 3),
+              placed('em', 1, 2),
+            ]),
+          ),
+        ),
+        '[em}aa[em}bb{em]cc{em]',
+      );
+    });
   });
 }

@@ -6,7 +6,7 @@ part of 'roff.dart';
 /// by number or by a step from the last, and the parenthesised containers;
 /// running heads and feet, and what else a paper says, are a `#pi` showing
 /// nothing.
-final class Me implements Format<Layered<int>, Sequence<int>> {
+final class Me implements Syntax {
   /// The me package, reading within [limits].
   const Me({this.limits = standard});
 

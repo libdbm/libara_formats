@@ -22,18 +22,6 @@ void main() {
       '${depth + 1}:${element.get('')}',
   ];
 
-  ARange element(int start, int length, Map<String, String> attributes) =>
-      value(
-        ARange.create(
-          start,
-          length,
-          attributes: {
-            for (final MapEntry(:key, :value) in attributes.entries)
-              key: Str(Text.of(value)),
-          },
-        ),
-      );
-
   group('Layer 2: tokens', () {
     test('a start tag inserted in a run of text splits it', () {
       final document = edited(
@@ -248,7 +236,7 @@ void main() {
       final document = edited(
         html,
         decoded(html, '<p>a<b>c</b>d</p>'),
-        Edit(3, Mark(element(1, 5, {'': 'em', 'id': 'x'}))),
+        Edit(3, Mark(over(1, 5, {'': 'em', 'id': 'x'}))),
       );
       expect(string(document.items), '<p><em id="x">a<b>c</b>d</em></p>');
       expect(built(document), [
@@ -268,7 +256,7 @@ void main() {
       final document = edited(
         html,
         decoded(html, '<h1>x</h1><p>a</p><p>b</p>'),
-        Edit(3, Mark(element(3, 6, {'': 'ul'}))),
+        Edit(3, Mark(over(3, 6, {'': 'ul'}))),
       );
       expect(string(document.items), '<h1>x</h1><ul><p>a</p><p>b</p></ul>');
       expect(built(document), [
@@ -287,7 +275,7 @@ void main() {
       final document = edited(
         html,
         decoded(html, '<p>a</p><p>b</p><h1>x</h1>'),
-        Edit(3, Mark(element(0, 6, {'': 'ul'}))),
+        Edit(3, Mark(over(0, 6, {'': 'ul'}))),
       );
       expect(string(document.items), '<ul><p>a</p><p>b</p></ul><h1>x</h1>');
     });
@@ -295,7 +283,7 @@ void main() {
     test('half an element is not wrapped', () {
       refused(
         decoded(html, '<p>a<b>c</b>d</p>'),
-        Edit(3, Mark(element(1, 2, {'': 'em'}))),
+        Edit(3, Mark(over(1, 2, {'': 'em'}))),
         'other elements',
       );
     });
@@ -303,7 +291,7 @@ void main() {
     test('nor is what the new element would close', () {
       refused(
         decoded(html, '<p>a<b>c</b>d</p>'),
-        Edit(3, Mark(element(1, 1, {'': 'p'}))),
+        Edit(3, Mark(over(1, 1, {'': 'p'}))),
         'other elements',
       );
     });

@@ -1,0 +1,57 @@
+{
+  "reference": "libreoffice",
+  "blocks": [
+    {
+      "name": "h1",
+      "text": "Revisions"
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor, incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  ],
+  "faces": [
+    {
+      "name": "strong",
+      "text": "incididunt ut labore"
+    }
+  ],
+  "pandoc": {
+    "blocks": [
+      {
+        "name": "h1",
+        "text": "Revisions"
+      },
+      {
+        "name": "p",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor, incididunt ut labore et dolore magna aliqua."
+      },
+      {
+        "name": "p",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      }
+    ],
+    "faces": [
+      {
+        "name": "sup",
+        "text": "Revisions"
+      },
+      {
+        "name": "s",
+        "text": "sed do eiusmod tempor,"
+      },
+      {
+        "name": "strong",
+        "text": "incididunt ut labore"
+      }
+    ]
+  },
+  "disagreements": [
+    "pandoc adds the face sup \"Revisions\"",
+    "pandoc adds the face s \"sed do eiusmod tempor,\""
+  ]
+}

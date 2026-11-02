@@ -6,10 +6,8 @@ library;
 import 'dart:math';
 
 import 'package:libara/libara.dart';
+import 'package:libara_formats/libara_formats.dart';
 import 'package:test/test.dart';
-
-/// A syntax as this package hands one out.
-typedef Syntax = Format<Layered<int>, Sequence<int>>;
 
 /// The value of [result], failing the test on a failure.
 T value<T>(Result<T> result) => switch (result) {
@@ -188,6 +186,41 @@ void refused(Layered<int> document, Edit<int> edit, String why) {
         .having((failure) => failure.message, 'message', contains(why)),
   );
 }
+
+/// The marker of [document]'s element called [name], the [nth] of them in
+/// start order, the longer first where two start together.
+Marker element(Layered<int> document, String name, [int nth = 0]) {
+  final named =
+      [
+        for (final pair in document.markers(3))
+          if (said(pair.$2, '') == name) pair,
+      ]..sort(
+        (one, other) => one.$2.start != other.$2.start
+            ? one.$2.start.compareTo(other.$2.start)
+            : other.$2.length.compareTo(one.$2.length),
+      );
+  return named[nth].$1;
+}
+
+/// [document]'s element under [marker].
+ARange marked(Layered<int> document, Marker marker) =>
+    document.markers(3).firstWhere((pair) => pair.$1 == marker).$2;
+
+/// A new range saying [attributes] over [length] items from [start].
+ARange over(int start, int length, Map<String, String> attributes) => value(
+  ARange.create(
+    start,
+    length,
+    attributes: {
+      for (final MapEntry(:key, :value) in attributes.entries)
+        key: Str(Text.of(value)),
+    },
+  ),
+);
+
+/// The index of [document]'s token covering exactly [words].
+int at(Layered<int> document, String words) =>
+    tokens(document).indexWhere((token) => token.$2 == words);
 
 /// The marker of [document]'s range at [layer] that [test] picks.
 Marker marker(Layered<int> document, int layer, bool Function(ARange) test) =>

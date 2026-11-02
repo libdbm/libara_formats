@@ -17,6 +17,7 @@ import 'package:libara/libara.dart';
 
 import '../convert.dart';
 import '../editing.dart';
+import '../formats.dart';
 import '../lexing.dart';
 import '../limits.dart';
 import '../positions.dart';
@@ -34,7 +35,7 @@ part 'write.dart';
 /// the rest runs of `#text`. Layer 3 holds the elements, from the first
 /// token of each to its last; a paragraph is a `p` saying `implied`,
 /// with no tokens of its own.
-final class LaTeX implements Format<Layered<int>, Sequence<int>> {
+final class LaTeX implements Syntax {
   /// LaTeX, reading within [limits].
   const LaTeX({this.limits = standard});
 

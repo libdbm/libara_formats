@@ -7,7 +7,7 @@ part of 'roff.dart';
 /// an indented paragraph an item with its tag, and the font requests set
 /// their arguments. Everything else a page may say, a condition, a string,
 /// a register, a macro of the page's own, is a `#pi` showing nothing.
-final class Man implements Format<Layered<int>, Sequence<int>> {
+final class Man implements Syntax {
   /// The man package, reading within [limits].
   const Man({this.limits = standard});
 

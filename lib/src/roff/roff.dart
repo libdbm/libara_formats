@@ -16,6 +16,7 @@ import 'package:libara/libara.dart';
 
 import '../convert.dart';
 import '../editing.dart';
+import '../formats.dart';
 import '../lexing.dart';
 import '../limits.dart';
 import '../positions.dart';

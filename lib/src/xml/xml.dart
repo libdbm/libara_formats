@@ -5,6 +5,7 @@ import 'package:libara/libara.dart';
 import '../convert.dart';
 import '../editing.dart';
 import '../entities.dart';
+import '../formats.dart';
 import '../kinds.dart';
 import '../lexing.dart';
 import '../limits.dart';
@@ -36,7 +37,7 @@ part 'edits.dart';
 /// than `markers`, more elements, elements nested deeper than `depth`, or a
 /// tag saying more than `attributes` refuse it as they are found. An edit
 /// past a cap leaves a diagnostic saying so.
-final class XML implements Format<Layered<int>, Sequence<int>> {
+final class XML implements Syntax {
   /// The XML syntax, reading within [limits].
   const XML({this.limits = standard});
 
@@ -52,7 +53,7 @@ final class XML implements Format<Layered<int>, Sequence<int>> {
   @override
   Result<Sequence<int>> encode(Layered<int> value) => value.grammar is _Grammar
       ? Success(value.items)
-      : tree(value, 'xml', empty: (_) => '/>');
+      : tree(value, 'xml', empty: (_) => '/>', marked: true);
 }
 
 /// How the diagnostic for a start tag that never closes begins.

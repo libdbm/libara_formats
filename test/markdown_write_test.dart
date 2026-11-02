@@ -21,6 +21,11 @@ void main() {
   String written(String text) =>
       string(value(markdown.encode(decoded(xml, text))));
 
+  /// [text] read as HTML, which implies what a page leaves out, and
+  /// written as Markdown.
+  String paged(String text) =>
+      string(value(markdown.encode(decoded(const HTML(), text))));
+
   group('A structural edit represents, so that a fresh read finds one,', () {
     for (final name in [
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'em', 'strong', 'code', //
@@ -122,6 +127,26 @@ void main() {
       expect(written('<h1>Title</h1><p>a <em>b</em></p>'), '# Title\n\na *b*');
     });
 
+    test('and what follows a block outside one stands apart from it', () {
+      // A picture or words left loose after a paragraph, as a page writes
+      // them, would otherwise run on into it.
+      expect(
+        paged('<p>text</p><img src="x.png" alt="x">'),
+        'text\n\n![x](x.png)',
+      );
+      expect(paged('<p>one</p>two <em>three</em>'), 'one\n\ntwo *three*');
+      expect(
+        paged('<p>one</p>\n<img src="x.png" alt="x">'),
+        'one\n\n![x](x.png)',
+      );
+    });
+
+    test('and b and i are emphasis, as strong and em are', () {
+      // What a browser and Google Docs put on the clipboard.
+      expect(written('<p>a <b>b</b> <i>c</i></p>'), 'a **b** *c*');
+      expect(paged('<p>a <b>b</b> <i>c</i></p>'), 'a **b** *c*');
+    });
+
     test('and the first block stands where the text begins', () {
       // Nothing stands before it to part it from, so a line end before it
       // is kept as it was rather than made a blank line.
@@ -165,6 +190,27 @@ void main() {
       expect(text, contains('| A | B |'));
       expect(text, contains('| --- | --- |'));
       expect(text, contains('| 1 | 2 |'));
+    });
+
+    test('and a table read as HTML, its rows in the body it implies', () {
+      expect(
+        paged(
+          '<table><tr><th>A</th><th>B</th></tr>'
+          '<tr><td>1</td><td>2</td></tr></table>',
+        ),
+        '| A | B |\n| --- | --- |\n| 1 | 2 |',
+      );
+    });
+
+    test('and one whose rows are grouped, white space between them', () {
+      expect(
+        paged(
+          '<table>\n<thead>\n<tr><th>A</th>\n<th>B</th></tr>\n</thead>\n'
+          '<tbody>\n<tr><td>1</td>\n<td>2</td></tr>\n</tbody>\n'
+          '<tfoot><tr><td>3</td><td>4</td></tr></tfoot>\n</table>',
+        ),
+        '| A | B |\n| --- | --- |\n| 1 | 2 |\n| 3 | 4 |',
+      );
     });
 
     test('with a bar inside a cell escaped so it does not end it', () {

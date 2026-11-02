@@ -14,30 +14,6 @@ void main() {
 
   Layered<int> read(String text) => decoded(markdown, text);
 
-  /// The marker of [document]'s element called [name], the [nth] of them.
-  Marker element(Layered<int> document, String name, [int nth = 0]) => document
-      .markers(3)
-      .where((pair) => said(pair.$2, '') == name)
-      .toList()
-      .sorted()[nth]
-      .$1;
-
-  /// A new element called [name] over [length] tokens from [start].
-  ARange over(int start, int length, Map<String, String> attributes) => value(
-    ARange.create(
-      start,
-      length,
-      attributes: {
-        for (final MapEntry(:key, :value) in attributes.entries)
-          key: Str(Text.of(value)),
-      },
-    ),
-  );
-
-  /// The index of [document]'s token covering [words].
-  int at(Layered<int> document, String words) =>
-      tokens(document).indexWhere((token) => token.$2 == words);
-
   group('Layer 2: markup', () {
     test('emphasis is written a delimiter at a time', () {
       var document = read('a b c\n');
@@ -409,20 +385,6 @@ void main() {
     }
   });
 }
-
-extension on List<(Marker, ARange)> {
-  /// These in start order, longest first where two start together.
-  List<(Marker, ARange)> sorted() => [...this]
-    ..sort(
-      (one, other) => one.$2.start != other.$2.start
-          ? one.$2.start.compareTo(other.$2.start)
-          : other.$2.length.compareTo(one.$2.length),
-    );
-}
-
-/// [document]'s range at [layer] under [marker].
-ARange marked(Layered<int> document, Marker marker) =>
-    document.markers(3).firstWhere((pair) => pair.$1 == marker).$2;
 
 /// A random structural edit of [document], at layer 2 or 3.
 Edit<int>? proposed(Layered<int> document, Random random) {

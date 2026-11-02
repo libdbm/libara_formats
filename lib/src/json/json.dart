@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:libara/libara.dart';
 
 import '../editing.dart';
+import '../formats.dart';
 import '../lexing.dart';
 import '../limits.dart';
 
@@ -33,7 +34,7 @@ import '../limits.dart';
 /// text edit within a string or not an edit JSON makes, so no structural
 /// edit is carried out yet. A document read in another syntax is not
 /// written as JSON, since no element of it says what value it is.
-final class JSON implements Format<Layered<int>, Sequence<int>> {
+final class JSON implements Syntax {
   /// The JSON syntax, reading within [limits].
   const JSON({this.limits = standard});
 

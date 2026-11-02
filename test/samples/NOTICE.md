@@ -137,6 +137,30 @@ Nothing else is changed. What the codec reads out of each is pinned in
 `packages/markwrite_support/test/goldens/latex/`, and `maltese.tex` is laid
 out whole in the layout goldens.
 
+## The word processor documents
+
+`rtf/features.docx`, `rtf/revisions.docx` and `rtf/degenerate.docx` were
+written for this package by `tool/rtf_samples.dart`, from lorem ipsum, and
+are under the package's licence. Each holds what one part of the RTF
+reading is tested on:
+
+- `features` has styles, faces, lists to three levels, a table, a link and
+  a footnote, and no revisions;
+- `revisions` has an insertion, a deletion and a change of formatting, by
+  two authors;
+- `degenerate` is formatted by hand throughout, its headings `Normal`
+  paragraphs in 16-point bold.
+
+Running the script again writes the same bytes. The RTF samples beside them
+are these documents saved as RTF:
+
+- `<name>-word.rtf` by Microsoft Word, by hand, on 2 November 2026;
+- `<name>-pages.rtf` exported by Pages 15.1.1, by hand, on 2 November
+  2026, which accepted the revisions on import and set every paragraph of
+  `revisions` in its heading's 16-point bold;
+- `<name>-libreoffice.rtf` and `<name>-textedit.rtf` by
+  `tool/rtf_samples.dart`, through LibreOffice and Cocoa's `textutil`.
+
 ## Copyright and licence of the specifications
 
 > Copyright (c) 2006, 2009, 2010 W3C (R) (MIT, ERCIM, Keio), All Rights

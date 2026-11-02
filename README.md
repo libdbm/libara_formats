@@ -29,7 +29,14 @@ if (read case Success(value: final document)) {
 
 `formats` maps each syntax's name and file extension, in lower case, to its
 format: `xml`, `html` and `htm`, `lmnl`, `markdown` and `md`, `man` and the
-section numbers `1` to `9`, `ms`, `me`, `latex` and `tex`, `json`, and `dart`.
+section numbers `1` to `9`, `ms`, `me`, `latex` and `tex`, `json`, `dart`, and
+`rtf`.
+
+Each is a `Syntax`: a `Readable`, which a document is read from by `decode`,
+and a `Writable`, which a document is written in by `encode`. `importers`
+maps a word processor's format to a `Readable` alone, which reads its files
+into a normalized document, as LMNL: `rtf`, for what Word, LibreOffice,
+TextEdit and Pages save.
 
 `example/main.dart` reads, edits and converts a document, and
 [doc/layers.md](doc/layers.md) sets out how each syntax maps onto the

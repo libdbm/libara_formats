@@ -171,4 +171,51 @@ void main() {
       expect(tail, lessThan(budget));
     });
   });
+
+  group('writing a tree', () {
+    // Splitting elements that cross was measured against the code before
+    // it, alternately on one machine: the two were within 1% of each other
+    // writing huck.lmnl, where nothing crosses. What is held here is the
+    // budget for reading a book, which load on the machine does not upset.
+    test('huck.lmnl written as XML', () {
+      final document = decoded(
+        formats['lmnl']!,
+        File('test/samples/huck.lmnl').readAsStringSync(),
+      );
+      final (middle, _) = cost(5, (_) => formats['xml']!.encode(document));
+      print('huck.lmnl as XML: middle $middle us');
+      expect(middle, lessThan(opening));
+    });
+
+    test('a book whose every paragraph an em crosses into the next', () {
+      // 8,000 paragraphs, each with an em from its middle to the middle of
+      // the next: every em is cut in two.
+      final text = StringBuffer('[p}one ');
+      for (var index = 0; index < paragraphs; index++) {
+        text.write('[em=$index}two{p][p}three{em=$index] four ');
+      }
+      text.write('{p]');
+      final document = decoded(formats['lmnl']!, text.toString());
+      final (middle, _) = cost(5, (_) => formats['xml']!.encode(document));
+      print('crossing book as XML: middle $middle us');
+      expect(middle, lessThan(opening));
+    });
+  });
+
+  group('rtf', () {
+    test('rtf reading a 1MB file', () {
+      final sample = String.fromCharCodes(
+        File('test/samples/rtf/features-word.rtf').readAsBytesSync(),
+      );
+      final body = sample.substring(0, sample.lastIndexOf('}'));
+      final paragraph =
+          r'\pard Lorem ipsum dolor {\b sit} amet, consectetur elit.\par'
+          '\n';
+      final text =
+          '$body${paragraph * ((1000000 - body.length) ~/ paragraph.length)}}';
+      final (middle, _) = cost(5, (_) => decoded(formats['rtf']!, text));
+      print('rtf reading ${text.length} bytes: middle $middle us');
+      expect(middle, lessThan(500000));
+    });
+  });
 }

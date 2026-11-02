@@ -1,0 +1,69 @@
+{
+  "reference": "textutil",
+  "blocks": [
+    {
+      "name": "p",
+      "text": "Lorem Ipsum Dolor"
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "p",
+      "text": "Sit Amet Consectetur"
+    },
+    {
+      "name": "p",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    },
+    {
+      "name": "p",
+      "text": "Mixed: larger and smaller."
+    }
+  ],
+  "faces": [
+    {
+      "name": "strong",
+      "text": "Lorem Ipsum Dolor"
+    },
+    {
+      "name": "strong",
+      "text": "Sit Amet Consectetur"
+    }
+  ],
+  "pandoc": {
+    "blocks": [
+      {
+        "name": "p",
+        "text": "Lorem Ipsum Dolor"
+      },
+      {
+        "name": "p",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      },
+      {
+        "name": "p",
+        "text": "Sit Amet Consectetur"
+      },
+      {
+        "name": "p",
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mixed: larger and smaller."
+      }
+    ],
+    "faces": [
+      {
+        "name": "strong",
+        "text": "Lorem Ipsum Dolor"
+      },
+      {
+        "name": "strong",
+        "text": "Sit Amet Consectetur"
+      }
+    ]
+  },
+  "disagreements": [
+    "pandoc lacks the block p \"Mixed: larger and smaller.\"",
+    "pandoc adds the block p \"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mixed: larger and smaller.\""
+  ]
+}
